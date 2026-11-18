@@ -43,14 +43,14 @@ Os números nas telemetrias e o movimento das camadas vêm de fontes públicas, 
 | Campo magnético interplanetário (Bt, Bz, By) | NOAA SWPC | a cada 30 s |
 | Índice Kp, a atividade geomagnética de 0 a 9 | NOAA SWPC, Kp planetário estimado | a cada 30 s |
 | Raios-X do Sol (classes A, B, C, M e X) | NOAA SWPC, satélites GOES | a cada 30 s |
-| Posições dos planetas | [NASA/JPL Horizons](https://ssd.jpl.nasa.gov/horizons/), pelo servidor do Solarviews | a cada 10 min |
+| Posições dos planetas | [NASA/JPL Horizons](https://ssd.jpl.nasa.gov/horizons/), pelo servidor local | a cada 10 min |
 | Posições dos planetas, sem o servidor | elementos orbitais do JPL (E. M. Standish), calculados no navegador | a cada quadro |
 | Céu: estrelas, Lua, planetas e hora sideral | cálculo astronômico com o relógio real, visto de São Paulo (ajustável) | a cada quadro |
 
 ```mermaid
 flowchart LR
   NOAA["NOAA SWPC<br/>vento solar, campo magnético,<br/>Kp, raios-X"] --> M
-  JPL["NASA/JPL Horizons<br/>posições dos planetas"] --> S["servidor do Solarviews<br/>/api/state (opcional)"] --> M
+  JPL["NASA/JPL Horizons<br/>posições dos planetas"] --> S["servidor local<br/>/api/state (opcional)"] --> M
   REL["relógio real<br/>céu, Lua, hora sideral"] --> M
   SOM["música ou microfone<br/>graves, médios, agudos, ataques"] --> M
   M["motor de camadas"] --> C["composições"] --> O["vista, janela de saída,<br/>MP4, PNG"]
@@ -120,9 +120,9 @@ A trilha do showreel foi gerada para este projeto e não usa música de terceiro
 
 Suba o `index.html` e a pasta `font/` para qualquer hospedagem estática, como o GitHub Pages ou o seu próprio site. O clima espacial continua ao vivo pelo NOAA, e as posições dos planetas usam os elementos orbitais do JPL.
 
-### Com o servidor do Solarviews (opcional)
+### Com o servidor local (opcional)
 
-O Solarviews é o projeto irmão desta ferramenta: um servidor Node, sem dependências, que consulta o JPL Horizons e o NOAA e entrega tudo em `/api/state`. Com ele rodando, as posições dos planetas vêm do Horizons e a ferramenta abre em `http://localhost:3000/motor-grafico/`. Por esse endereço, o Firefox libera controladores MIDI.
+O servidor (`server.js`, incluído neste repositório) é um programa Node, sem dependências, que consulta o JPL Horizons e o NOAA e entrega tudo em `/api/state`. Com ele rodando, as posições dos planetas vêm do Horizons e a ferramenta abre em `http://localhost:3000/`. Por esse endereço, o Firefox libera controladores MIDI.
 
 ### Atalhos principais
 
@@ -242,7 +242,7 @@ O código foi escrito em parceria com o [Claude Code](https://claude.com/claude-
 - **Render em Canvas 2D:** cada tipo de camada é registrado com `reg()` e desenha num quadro que fecha o loop (ciclos inteiros por loop). As transições entre composições usam um segundo buffer. A qualidade da prévia se ajusta sozinha, e as exportações saem sempre em 100%.
 - **Dados:**
   - `fetch` dos JSON públicos do NOAA SWPC.
-  - Servidor Node opcional (o Solarviews) para o JPL Horizons.
+  - Servidor Node opcional (`server.js`) para o JPL Horizons.
   - Sem servidor, os planetas saem dos elementos keplerianos do JPL, conferidos contra o Horizons com diferença abaixo de meio grau.
 - **Astronomia:** hora sideral, projeção estereográfica do céu com perspectiva, catálogo de 80 estrelas, fase e posição da Lua, luas galileanas e globos em projeção ortográfica com terminador real.
 - **Música:**
@@ -290,7 +290,7 @@ Para criar uma camada nova, acrescente um `reg(...)` e uma entrada em `FAMILIES`
 
 - **Live data:** while the tool is open, it reads data from public sources.
   - [NOAA SWPC](https://www.swpc.noaa.gov/): solar wind speed, density and temperature; the interplanetary magnetic field (Bt, Bz); the planetary Kp index; GOES X-ray flux. Read every 30 s, straight from the browser.
-  - [NASA/JPL Horizons](https://ssd.jpl.nasa.gov/horizons/): planet positions, through the optional Solarviews server. Without the server, positions come from JPL's Keplerian elements.
+  - [NASA/JPL Horizons](https://ssd.jpl.nasa.gov/horizons/): planet positions, through the optional local server (`server.js`). Without the server, positions come from JPL's Keplerian elements.
   - The real-time clock: sky, Moon and sidereal time.
 - **Run it:** open `index.html` in Chrome, Edge or Firefox (Safari is untested). There is nothing to install, and it works on any static host (only `index.html` and `font/` are needed).
 - **Features:**

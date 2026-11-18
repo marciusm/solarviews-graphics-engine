@@ -1,0 +1,16 @@
+{
+  "name": "solarviews-graphics-engine",
+  "version": "1.0.0",
+  "description": "Visuais generativos do sistema solar movidos por dados espaciais ao vivo (NASA/JPL Horizons e NOAA SWPC), para VJ e vídeo.",
+  "author": "Marcius Monteiro <https://marciusm.com>",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.17"
+  }
+}
