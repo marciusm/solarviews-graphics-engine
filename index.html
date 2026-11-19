@@ -91,6 +91,7 @@ body.learn #paneLayer [data-k][data-t=n],body.learn #paneLayer [data-k][data-t=b
 .mlist .mrow{display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:1px solid var(--line)}.mlist .mrow span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mlist .mrow b{flex:0 0 82px;color:var(--acc);font-weight:400}.mlist .mrow button{padding:1px 6px}
 .perf div{display:flex;gap:6px;padding:2px 0}.perf div span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.perf div b{font-weight:400;color:var(--dim)}.perf div b.hot{color:#ffb020}
 .meter{display:flex;gap:3px;height:34px;align-items:flex-end;margin:4px 0 2px}.meter i{flex:1;background:var(--ink);opacity:.8;min-height:1px}.meter i.on{background:var(--acc);opacity:1}.mlab{display:flex;gap:3px}.mlab span{flex:1;font-size:9px;color:var(--dim);text-align:center}
+.lng{display:inline-flex}.lng button{padding:5px 7px;min-width:0}.lng button+button{border-left:0}#help .lngrow{display:flex;align-items:center;gap:10px;margin:0 0 14px}
 .scr select[data-k=mv]{grid-column:1/5}.scr.off{opacity:.38}.scr.off input,.scr.off select{pointer-events:none}.drbox{border:1px dashed var(--acc);padding:8px;margin:8px 0}.drbox h3{margin-top:2px;color:var(--acc)}
 </style>
 </head>
@@ -100,7 +101,7 @@ body.learn #paneLayer [data-k][data-t=n],body.learn #paneLayer [data-k][data-t=b
   <h1>SOLARVIEWS &amp; GALAXY GRAPHICS ENGINE</h1><a class="by" href="https://marciusm.com" target="_blank" rel="noopener" title="marciusm.com">BY MARCIUS MONTEIRO</a><span class="dim" id="projName"></span>
   <span class="grow"></span>
   <button id="bUndo" title="Desfazer (Cmd+Z)" disabled>↶</button><button id="bRedo" title="Refazer (Cmd+Shift+Z)" disabled>↷</button><button id="bFit" class="on" title="Ajustar à janela">FIT</button><button id="b100" title="Tamanho real">100%</button><button id="bZoomOut" title="Afastar a prancheta (⌘−)">−</button><button id="bZoomIn" title="Aproximar a prancheta (⌘+)">+</button><button id="bMove" title="Mover as camadas direto na prancheta (V)">MOVER</button><button id="bGrid" title="G">GRADE</button>
-  <button id="bClean" title="H">SÓ A VISTA</button><button id="bFs" title="F">TELA CHEIA</button><button id="bHelp" title="?">?</button>
+  <button id="bClean" title="H">SÓ A VISTA</button><button id="bFs" title="F">TELA CHEIA</button><span class="lng" role="group" aria-label="Idioma / Language" data-i18n="off"><button type="button" data-lang="pt" title="Português">PT</button><button type="button" data-lang="en" title="English">EN</button></span><button id="bHelp" title="?">?</button>
 </header>
 <aside id="lib" aria-label="Biblioteca">
   <h2>COMPOSIÇÕES</h2><div id="comps"></div>
@@ -134,6 +135,7 @@ body.learn #paneLayer [data-k][data-t=n],body.learn #paneLayer [data-k][data-t=b
 <div id="help" hidden role="dialog" aria-label="Sobre a ferramenta"><div class="box">
   <h1>SOLARVIEWS &amp; GALAXY GRAPHICS ENGINE</h1>
   <p class="hcred">Criada por <a href="https://marciusm.com" target="_blank" rel="noopener">Marcius Monteiro</a></p>
+  <div class="lngrow" data-i18n="off"><span class="lng" role="group" aria-label="Idioma / Language"><button type="button" data-lang="pt">PORTUGUÊS</button><button type="button" data-lang="en">ENGLISH</button></span></div>
   <p>Um motor de visuais generativos do sistema solar. Sol, planetas, luas, céu e galáxia são camadas que se combinam em composições, andam no tempo da música e reagem ao som, para projetar ao vivo (VJ) ou exportar em vídeo.</p>
   <h2>DADOS AO VIVO</h2>
   <p>Tudo se move com dados reais do espaço, coletados enquanto a ferramenta está aberta:</p>
@@ -154,6 +156,1225 @@ body.learn #paneLayer [data-k][data-t=n],body.learn #paneLayer [data-k][data-t=b
   </details>
   <div class="row"><button id="helpOk" class="on">COMEÇAR</button></div>
 </div></div>
+<!-- i18n:início -->
+<script>
+/* ===== idioma: português (original) e inglês =====
+   A ferramenta é escrita em português. Em inglês, esta camada traduz na exibição, sem tocar no projeto:
+   - textos, dicas e rótulos da página (observador do DOM; o original fica guardado para voltar ao português);
+   - textos desenhados na prancheta (fillText, strokeText e measureText), que também saem traduzidos nos vídeos;
+   - o conteúdo padrão dos campos de texto das camadas (telemetria, palavras), e os diálogos.
+   Escolha: botões PT/EN no topo e na tela de abertura, ?lang=en|pt na URL, ou o idioma do navegador. */
+(()=>{
+'use strict';
+const LKEY='motor-grafico/lang';
+function pickLang(){const q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='pt')return q;try{const s=localStorage.getItem(LKEY);if(s==='en'||s==='pt')return s}catch(e){}return/^pt\b/i.test(navigator.language||'')?'pt':'en'}
+let LANG=pickLang();
+document.documentElement.lang=LANG==='en'?'en':'pt-BR';
+
+/* ---- dicionário da interface: uma entrada por linha, "português ⇒ inglês" ---- */
+const UI_TXT=`
++ ADICIONAR ⇒ + ADD
++ CENA NO CURSOR (N) ⇒ + SCENE AT CURSOR (N)
++ NOVA ⇒ + NEW
+"Loop fechado" faz tudo que gira dar voltas inteiras por loop. ⇒ "Closed loop" makes everything that rotates complete whole turns per loop.
+0 desliga ⇒ 0 = off
+1. Escolha uma composição à esquerda, ou crie uma nova. ⇒ 1. Pick a composition on the left, or create a new one.
+2. Ligue, desligue, reordene (arrastando ou com ↑ ↓) e adicione camadas. Clique numa camada para ver os parâmetros à direita. ⇒ 2. Turn layers on and off, reorder them (by dragging or with ↑ ↓) and add new ones. Click a layer to see its parameters on the right.
+3. Arraste na vista para girar e inclinar a câmera; a roda do mouse aproxima. Shift + arrastar move a camada selecionada. O botão RECENTRALIZAR, na aba PROJETO, zera a câmera. Ou ligue o MOVER (tecla V) e arraste o elemento direto na prancheta. ⇒ 3. Drag in the view to rotate and tilt the camera; the mouse wheel zooms. Shift + drag moves the selected layer. The RECENTER button, in the PROJECT tab, resets the camera. Or turn on MOVE (V key) and drag the element directly on the artboard.
+3b. Solte uma imagem ou um vídeo na vista para criar uma camada de mídia; solte um áudio para usá-lo como música (ou escolha na aba Música). As camadas reagem a ela pelos parâmetros "Reação ao grave/médio/agudo/ataque". ⇒ 3b. Drop an image or a video on the view to create a media layer; drop an audio file to use it as music (or choose one in the Music tab). Layers react to it through the "Bass/mid/treble/attack reaction" parameters.
+4. Abas à direita: Projeto (tela, câmera, tempo, dados, arquivo), Cores (paleta e paleta reativa), Música (faixa e corte), Cenas (cenas na música e diretor automático), Ao vivo (janela de saída, troca, mestre, alertas, desempenho), MIDI e Exportar. ⇒ 4. Tabs on the right: Project (screen, camera, time, data, file), Colors (palette and reactive palette), Music (track and trim), Scenes (scenes on the music and auto director), Live (output window, switching, master, alerts, performance), MIDI and Export.
+5. O (?) ao lado do nome de cada seção explica como ela funciona. ⇒ 5. The (?) next to each section name explains how it works.
+: NOAA SWPC, o centro de previsão do clima espacial dos EUA. Vento solar (velocidade, densidade e temperatura) medido por satélites entre a Terra e o Sol, campo magnético interplanetário (Bt e Bz), índice Kp e raios-X do Sol (satélites GOES). Nova leitura a cada 30 s. ⇒ : NOAA SWPC, the US space weather prediction center. Solar wind (speed, density and temperature) measured by satellites between the Earth and the Sun, interplanetary magnetic field (Bt and Bz), Kp index and solar X-rays (GOES satellites). New reading every 30 s.
+: a cada batida forte entra outra paleta da seleção. ⇒ : every strong beat brings in another palette from the selection.
+: com "Telemetria no topo", a telemetria fica no canto de cima à esquerda e o título vai para o lugar onde ela ficava (embaixo à direita; no vertical, em cima à direita, abaixo do relógio). "Título no topo" volta ao arranjo antigo. Vale para todas as composições. ⇒ : with "Telemetry on top", the telemetry sits in the top left corner and the title moves to where it used to be (bottom right; in vertical, top right, below the clock). "Title on top" restores the old arrangement. Applies to all compositions.
+: continua .mp4, toca no Mac, no iPhone, no Chrome e no Firefox. ⇒ : still .mp4, plays on Mac, iPhone, Chrome and Firefox.
+: estrelas, Lua e planetas onde estão agora, vistos de São Paulo, pelo relógio real. ⇒ : stars, Moon and planets where they are now, seen from São Paulo, by the real clock.
+: força uma das duas. ⇒ : forces one of the two.
+: o formato do iPhone, aceito em qualquer rede, arquivo um pouco maior. No Chrome o MP4 sai com AAC direto. ⇒ : the iPhone format, accepted by any social network, slightly larger file. In Chrome the MP4 comes out with AAC directly.
+: o servidor local (planetas do JPL Horizons e clima do NOAA); se ele não responder, o NOAA direto pela internet, com os planetas calculados por elementos orbitais. ⇒ : the local server (planets from JPL Horizons and weather from NOAA); if it doesn't respond, NOAA directly over the internet, with planets computed from orbital elements.
+: posições do NASA/JPL Horizons, pelo servidor local. Sem ele, calculadas pelos elementos orbitais do JPL. ⇒ : positions from NASA/JPL Horizons, through the local server. Without it, computed from JPL's orbital elements.
+: trechos calmos usam as paletas do começo da lista (frias) e os intensos as do fim (quentes). ⇒ : calm passages use the palettes at the start of the list (cool) and intense ones those at the end (warm).
+: valores simulados que andam sozinhos, com uma tempestade de um minuto a cada 5 minutos. Bom para testar sem internet. ⇒ : simulated values that move on their own, with a one-minute storm every 5 minutes. Good for testing without internet.
+A cada N compassos (0 = nunca) ⇒ Every N bars (0 = never)
+A data é automática: a de hoje desta máquina, em DD.MM.AA, virando o dia sozinha. Digitar no campo troca por um texto livre, que fica salvo; USAR A DATA DE HOJE volta ao automático. ⇒ The date is automatic: today's date on this machine, as DD.MM.YY, rolling over by itself. Typing in the field replaces it with free text, which is saved; USE TODAY'S DATE goes back to automatic.
+A exportação começa no início do trecho; em MP4, "Duração: trecho da música" usa exatamente o trecho. ⇒ Export starts at the beginning of the section; in MP4, "Duration: music section" uses exactly that section.
+A magnetosfera fica no planeta da camada de órbitas: mova as órbitas ⇒ The magnetosphere sits on the planet of the orbits layer: move the orbits
+A mesma faixa dá sempre o mesmo plano. ⇒ The same track always gives the same plan.
+A reação à música está desligada (botão Reagir acima). ⇒ Music reaction is off (React button above).
+A vista e a janela de saída podem desenhar em resolução menor para não engasgar. Na automática, a qualidade cai quando um quadro demora mais que o tempo dele e volta quando sobra folga. Exportações e PNG saem sempre em 100%. ⇒ The view and the output window can draw at a lower resolution to avoid stuttering. In automatic mode, quality drops when a frame takes longer than its time slot and comes back when there is headroom. Exports and PNG always come out at 100%.
+A vista só redesenha quando o quadro muda, quando algo é editado ou uma vez por segundo. A lista de camadas mostra o tempo de cada uma; em laranja, as que pesam mais. ⇒ The view only redraws when the frame changes, when something is edited, or once per second. The layer list shows each layer's time; the heaviest ones are in orange.
+AAC indisponível ⇒ AAC unavailable
+ABRIR JANELA DE SAÍDA ⇒ OPEN OUTPUT WINDOW
+ABRIR JSON ⇒ OPEN JSON
+APAGAR TODOS ⇒ DELETE ALL
+APLICAR ⇒ APPLY
+APRENDER ⇒ LEARN
+APRENDENDO… (ESC SAI) ⇒ LEARNING… (ESC EXITS)
+Enquanto o rascunho existe, é ele que vale na vista: toque a música para ver o plano. Ajuste qualquer cena, tire as que não quiser (×; + põe de volta) e aplique. Suas cenas de antes ficam guardadas até você aplicar; DESCARTAR volta a elas. ⇒ While the draft exists, it is what the view shows: play the music to see the plan. Adjust any scene, remove the ones you don't want (×; + brings them back) and apply. Your previous scenes are kept until you apply; DISCARD goes back to them.
+demonstração ⇒ demo
+entrada ⇒ input
+APRENDER. ⇒ LEARN.
+AQUI ⇒ HERE
+ARQUIVO ⇒ FILE
+AÇÕES ⇒ ACTIONS
+Aberta como arquivo do disco, a página não tem MIDI no Firefox. Abra http://localhost:3000/ com o servidor rodando (node server.js), ou use o Chrome. ⇒ Opened as a file from disk, the page has no MIDI in Firefox. Open http://localhost:3000/ with the server running (node server.js), or use Chrome.
+Abertura ⇒ Opening
+Aceleração (horas por segundo) ⇒ Speed-up (hours per second)
+Acento ⇒ Accent
+Acento da paleta ⇒ Palette accent
+Acha as seções da música (intro, versos, refrões, quebras) pelo espectro e monta um rascunho com uma cena em cada uma, no tempo forte do compasso. ⇒ Finds the sections of the music (intro, verses, choruses, breaks) from the spectrum and builds a draft with one scene in each, on the downbeat.
+Afastar a prancheta (⌘−) ⇒ Zoom out the artboard (⌘−)
+Agudos ⇒ Treble
+Ajuda ⇒ Help
+Ajustar à janela ⇒ Fit to window
+Alcance das barras ⇒ Bar reach
+Alertas ⇒ Alerts
+Alinhamento ⇒ Alignment
+Alta ⇒ High
+Altura ⇒ Height
+Alvos ⇒ Targets
+Alvos sobre ⇒ Targets on
+Analisando a música de novo para achar as seções… ⇒ Analyzing the music again to find the sections…
+Anéis ⇒ Rings
+Anéis de marcação ⇒ Marker rings
+Apagar ⇒ Delete
+Apagar todos os controles MIDI ligados? ⇒ Delete all mapped MIDI controls?
+Aproximar a prancheta (⌘+) ⇒ Zoom in the artboard (⌘+)
+Arquivo (imagem ou vídeo) ⇒ File (image or video)
+Arrastar ⇒ Drag
+Arraste na vista: horizontal gira, vertical inclina. ⇒ Drag in the view: horizontal rotates, vertical tilts.
+As camadas mostram a origem de cada valor: AO VIVO, DEMO ou TÍPICO (sem conexão). ⇒ Layers show where each value comes from: LIVE, DEMO or TYPICAL (no connection).
+As camadas reagem pelos parâmetros de reação e pela Faixa do áudio (aba CAMADA). Com o microfone ligado, vale o maior dos dois. ⇒ Layers react through their reaction parameters and the Audio band (LAYER tab). With the microphone on, the larger of the two wins.
+As cenas da música estão no comando: pause a música ou desligue as cenas ⇒ The music scenes are in control: pause the music or turn the scenes off
+As cores do projeto: fundo, primária, secundária e acento. Cada camada usa uma dessas chaves ou um hex próprio. Composições podem ter paleta própria, que vale no lugar desta. ⇒ The project colors: background, primary, secondary and accent. Each layer uses one of these keys or its own hex. Compositions can have their own palette, which replaces this one.
+As cores trocam sozinhas com a música. ⇒ Colors change on their own with the music.
+As teclas [ e ] marcam início e fim onde está o cursor. ⇒ The [ and ] keys mark start and end at the cursor.
+Ataques ⇒ Attacks
+Até o quadro ⇒ To frame
+Aumentar BPM ⇒ Increase BPM
+Aurora com Bz norte ⇒ Aurora with Bz north
+Aurora com Bz sul ⇒ Aurora with Bz south
+Automática ⇒ Automatic
+Automática: hoje ⇒ Automatic: today
+Automática: servidor, depois NOAA direto ⇒ Automatic: server, then NOAA direct
+BPM e compassos definem o loop da animação quando não há música. ⇒ BPM and bars set the animation loop when there is no music.
+Barras ⇒ Bars
+Biblioteca ⇒ Library
+Blackout desligado ⇒ Blackout off
+Blackout ligado ⇒ Blackout on
+Blocos por glitch ⇒ Blocks per glitch
+Braços ⇒ Arms
+Brilho ⇒ Brightness
+Brilho geral ⇒ Overall brightness
+Brilho geral e blackout (tecla B) escurecem só a vista e a janela de saída, com meio segundo de fade. O vídeo exportado não muda. ⇒ Overall brightness and blackout (B key) darken only the view and the output window, with a half-second fade. The exported video does not change.
+Bz abaixo de (nT) ⇒ Bz below (nT)
+CAMADA ⇒ LAYER
+CAMADAS (DE CIMA PARA BAIXO) ⇒ LAYERS (TOP TO BOTTOM)
+CARREGANDO… ⇒ LOADING…
+CENAS ⇒ SCENES
+COMEÇAR ⇒ START
+COMO USAR E ATALHOS ⇒ HOW TO USE AND SHORTCUTS
+COMPOSIÇÕES ⇒ COMPOSITIONS
+CONTROLES LIGADOS ⇒ MAPPED CONTROLS
+CORES ⇒ COLORS
+CORTE ⇒ TRIM
+CÂMERA (COMPOSIÇÃO ATIVA) ⇒ CAMERA (ACTIVE COMPOSITION)
+CÓDIGOS ⇒ CODES
+Cada cena troca a composição num ponto da música, com transição e movimento de câmera. ⇒ Each scene switches the composition at a point in the music, with a transition and camera movement.
+Cada limite pode ser desligado: Kp, classe de raios-X, Bz para o sul e velocidade do vento. ⇒ Each threshold can be turned off: Kp, X-ray class, southward Bz and wind speed.
+Campo magnético ⇒ Magnetic field
+Cantos ⇒ Corners
+Carregue e analise uma música primeiro ⇒ Load and analyze a track first
+Carregue uma música (ou ligue o microfone) para as cores começarem a trocar. ⇒ Load a track (or turn on the microphone) for the colors to start changing.
+Carregue uma música na aba MÚSICA para marcar cenas. ⇒ Load a track in the MUSIC tab to mark scenes.
+Carregue uma música na aba MÚSICA. ⇒ Load a track in the MUSIC tab.
+Carregue uma música para marcar cenas ⇒ Load a track to mark scenes
+Cauda ⇒ Tail
+Cena removida ⇒ Scene removed
+Cena tirada do rascunho ⇒ Scene removed from the draft
+Cenas na música ⇒ Scenes on the music
+Centro X ⇒ Center X
+Centro X (sem órbitas) ⇒ Center X (no orbits)
+Centro Y ⇒ Center Y
+Centro Y (sem órbitas) ⇒ Center Y (no orbits)
+Cintilação ⇒ Twinkle
+Cintilação (Kp) ⇒ Twinkle (Kp)
+Clique nas paletas para escolher quais entram. As trocas são calculadas a partir da análise da faixa, então a mesma cor cai no mesmo instante ao vivo e na exportação. Com a música pausada, a paleta fica parada. Sem música, com o microfone ligado, segue o som ao vivo. ⇒ Click the palettes to choose which ones are used. Changes are computed from the track analysis, so the same color lands at the same moment live and in the export. With the music paused, the palette stays still. Without music, with the microphone on, it follows the live sound.
+Clique no que quer comandar: um parâmetro na aba CAMADA, a opacidade de uma camada, uma composição na lista à esquerda ou uma ação nesta aba. ⇒ Click what you want to control: a parameter in the LAYER tab, a layer's opacity, a composition in the list on the left, or an action in this tab.
+Clima espacial ⇒ Space weather
+Clima espacial (NOAA) ⇒ Space weather (NOAA)
+Codificando o áudio… ⇒ Encoding audio…
+Colunas ⇒ Columns
+Com as cenas da música tocando, são elas que mandam. ⇒ While the music scenes are playing, they take over.
+Com uma música e "Loop segue a música" ligado, o loop tem o tamanho do trecho cortado (ou da faixa inteira) e anda junto com ela: a animação só repete quando a música volta ao início do trecho. ⇒ With a track loaded and "Loop follows the music" on, the loop is as long as the trimmed section (or the whole track) and moves with it: the animation only repeats when the music returns to the start of the section.
+Como funciona ⇒ How it works
+Cometa ⇒ Comet
+Compassos ⇒ Bars
+Composição pela intensidade do trecho: as de barra curta vão para os trechos calmos, as de barra longa para os refrões. Clique nelas para tirar ou pôr. ⇒ Composition by section intensity: those with a short bar go to calm passages, those with a long bar to choruses. Click them to remove or add.
+Composições que podem entrar: ⇒ Compositions that can be used:
+Comprimento ⇒ Length
+Comprimento do rastro ⇒ Trail length
+Confiança ⇒ Confidence
+Contador de beat ⇒ Beat counter
+Conteúdo do log ⇒ Log content
+Contraste ⇒ Contrast
+Controles ⇒ Controls
+Cor ⇒ Color
+Cor Bz sul ⇒ Bz south color
+Cor da cauda de íons ⇒ Ion tail color
+Cor da coroa ⇒ Corona color
+Cor da paleta ⇒ Palette color
+Cor da poeira ⇒ Dust color
+Cor da varredura ⇒ Sweep color
+Cor das marcas ⇒ Mark color
+Cor de alerta ⇒ Alert color
+Cor de destaque ⇒ Highlight color
+Cor do Sol ⇒ Sun color
+Cor do alvo ⇒ Target color
+Cor do beat 1 ⇒ Beat 1 color
+Cor do bloco ⇒ Block color
+Cor do destaque ⇒ Highlight color
+Cor do disco ⇒ Disk color
+Cor do núcleo ⇒ Core color
+Cor do texto (auto) ⇒ Text color (auto)
+Cor do ângulo ⇒ Angle color
+Cor dos astros ⇒ Celestial body color
+Cor dos braços ⇒ Arm color
+Cor dos picos ⇒ Peak color
+Cor em hex ⇒ Hex color
+Cor fria ⇒ Cool color
+Cor personalizada ⇒ Custom color
+Cor própria dos planetas ⇒ Planets' own colors
+Cor quente ⇒ Warm color
+Coroa ⇒ Corona
+Corte seco ⇒ Hard cut
+Cortes ⇒ Cuts
+Cortina da aurora ⇒ Aurora curtain
+Criada por ⇒ Created by
+Cruz ⇒ Cross
+Curvatura (Parker) ⇒ Curvature (Parker)
+Câmera e reação por cena conforme a energia e a banda que domina o trecho. ⇒ Camera and reaction per scene follow the energy and the band that dominates the section.
+Câmera parada ⇒ Static camera
+Câmera por cena ⇒ Camera per scene
+Câmera: afastar ⇒ Camera: zoom out
+Câmera: aproximar ⇒ Camera: zoom in
+Câmera: aproximar, afastar, girar, subir, descer ou deriva, ao longo da cena. ⇒ Camera: zoom in, zoom out, rotate, rise, descend or drift, over the scene.
+Câmera: deriva ⇒ Camera: drift
+Câmera: descer ⇒ Camera: descend
+Câmera: girar → ⇒ Camera: rotate →
+Câmera: girar ← ⇒ Camera: rotate ←
+Câmera: subir ⇒ Camera: rise
+Céu ⇒ Sky
+Códigos de texto ⇒ Text codes
+Códigos: valores ao vivo (BPM, vento, Kp…) ⇒ Codes: live values (BPM, wind, Kp…)
+DADOS AO VIVO ⇒ LIVE DATA
+DESCARTAR ⇒ DISCARD
+DESEMPENHO ⇒ PERFORMANCE
+DESLIGADO ⇒ OFF
+DIRETOR AUTOMÁTICO ⇒ AUTO DIRECTOR
+DO INÍCIO ⇒ FROM START
+DUPLICAR CAMADA ⇒ DUPLICATE LAYER
+Dados ao vivo ⇒ Live data
+Dados ao vivo (Bt) ⇒ Live data (Bt)
+Dados ao vivo (Kp) ⇒ Live data (Kp)
+Dados ao vivo (raios-X no Sol) ⇒ Live data (X-rays on the Sun)
+Dados ao vivo (raios-X no núcleo) ⇒ Live data (X-rays in the core)
+Dados ao vivo (raios-X, densidade) ⇒ Live data (X-rays, density)
+Dados ao vivo (raios-X, vento) ⇒ Live data (X-rays, wind)
+Dados ao vivo (vento e Bz na cauda) ⇒ Live data (wind and Bz in the tail)
+Dados ao vivo (vento, Bz, Kp) ⇒ Live data (wind, Bz, Kp)
+Demonstração ⇒ Demo
+Demonstração (valores simulados) ⇒ Demo (simulated values)
+Demonstração: valores simulados. ⇒ Demo: simulated values.
+Descer ⇒ Move down
+Desfazer (Cmd+Z) ⇒ Undo (Cmd+Z)
+Desligada ⇒ Off
+Desligada: valem a paleta do projeto e a da composição. ⇒ Off: the project palette and the composition palette apply.
+Desligado ⇒ Off
+Desligado. ⇒ Off.
+Deslize ⇒ Slide
+Deslocamento (compassos) ⇒ Offset (bars)
+Dias por segundo (0 = posição real) ⇒ Days per second (0 = real position)
+Diminuir BPM ⇒ Decrease BPM
+Direção do Sol ⇒ Sun direction
+Direção do periélio ° ⇒ Perihelion direction °
+Disparam com dados ao vivo ou na demonstração, e aparecem só na vista, na janela de saída e no PNG, nunca nas exportações de vídeo. ⇒ They fire with live data or in demo mode, and appear only in the view, the output window and PNG, never in video exports.
+Dispersão ⇒ Scatter
+Disposição ⇒ Arrangement
+Do quadro ⇒ From frame
+Duplicar ⇒ Duplicate
+Duração ⇒ Duration
+Duração (beats) ⇒ Duration (beats)
+Duração (s) ⇒ Duration (s)
+Duração (tempos) ⇒ Duration (beats)
+Duração da transição (s) ⇒ Transition duration (s)
+ENERGIA ⇒ ENERGY
+ESCOLHER… ⇒ CHOOSE…
+EXPORTAR ⇒ EXPORT
+EXPORTAR MP4 ⇒ EXPORT MP4
+EXPORTAR SEQUÊNCIA ⇒ EXPORT SEQUENCE
+Eclíptica ⇒ Ecliptic
+Editada à mão ⇒ Edited by hand
+Embaralhar ⇒ Scramble
+Encaixe ⇒ Fit
+Endereço da API (/api/state) ⇒ API address (/api/state)
+Energia (tudo junto) ⇒ Energy (everything)
+Enquanto o dado continuar acima do limite, o aviso volta no intervalo escolhido; vários juntos entram em fila. ⇒ While the value stays above the threshold, the alert comes back at the chosen interval; several at once are queued.
+Enrolamento ⇒ Winding
+Entrelinha ⇒ Line spacing
+Escala ⇒ Scale
+Escala do campo ⇒ Field scale
+Escala do texto ⇒ Text scale
+Escolha a composição na lista à esquerda e aperte N, ou dê duplo clique na faixa de cenas, no topo do gráfico do visor. ⇒ Choose the composition in the list on the left and press N, or double-click the scene strip at the top of the viewer graph.
+Escolha a música de novo: a análise antiga não tem o espectro ⇒ Choose the music again: the old analysis has no spectrum
+Escolha pelo menos uma paleta. ⇒ Choose at least one palette.
+Escolha uma camada que apareça na prancheta ⇒ Choose a layer that appears on the artboard
+Escolha uma imagem ou um vídeo ⇒ Choose an image or a video
+Escolha um arquivo de áudio ⇒ Choose an audio file
+Escolher cor ⇒ Choose color
+Esfera de pontos ⇒ Dot sphere
+Espaçamento ⇒ Spacing
+Espaço ⇒ Space
+Espelhar ⇒ Mirror
+Espessura ⇒ Thickness
+Espiral áurea ⇒ Golden spiral
+Esta camada desenha direto sobre a imagem: opacidade e mistura não se aplicam. ⇒ This layer draws directly over the image: opacity and blending don't apply.
+Esta camada não tem posição para mover ⇒ This layer has no position to move
+Este navegador (Firefox, por exemplo) não codifica AAC, o áudio padrão do MP4. ⇒ This browser (Firefox, for example) doesn't encode AAC, the standard MP4 audio.
+Este navegador não codifica MP4 (use Chrome, Edge ou Safari recentes) ⇒ This browser can't encode MP4 (use a recent Chrome, Edge or Safari)
+Este navegador não grava WebM ⇒ This browser can't record WebM
+Este navegador não tem Web MIDI. ⇒ This browser has no Web MIDI.
+Estilo do glitch ⇒ Glitch style
+Estrelas ⇒ Stars
+Estrelas de fundo ⇒ Background stars
+Estrelas, Via Láctea e astros ⇒ Stars, Milky Way and celestial bodies
+Etiquetas ⇒ Labels
+Evento ⇒ Event
+Excentricidade ⇒ Eccentricity
+Exportação cancelada. ⇒ Export canceled.
+FECHAR ⇒ CLOSE
+FECHAR JANELA DE SAÍDA ⇒ CLOSE OUTPUT WINDOW
+Faixa do áudio ⇒ Audio band
+Fechar ⇒ Close
+Fechar (Esc) ⇒ Close (Esc)
+Fim (s) ⇒ End (s)
+Fita 3840×480 ⇒ Strip 3840×480
+Fluxos ⇒ Streams
+Fonte ⇒ Source
+Fontes ⇒ Sources
+Fontes nos planetas ⇒ Sources on the planets
+Forma ⇒ Shape
+Formato ⇒ Format
+Formato vertical: as alterações desta camada valem só para o vertical. O horizontal continua como estava. ⇒ Vertical format: changes to this layer apply only to vertical. Horizontal stays as it was.
+Formatos diferentes do projeto usam o layout correspondente (o vertical aplica os ajustes de vertical de cada camada). Para conferir antes, use VER ESTE FORMATO NA VISTA. No Instagram: Reels e Stories em 9:16, feed em 4:5; 30 fps e qualidade Alta, porque o Instagram recomprime o vídeo. Loops fecham, então 2 ou 4 loops viram um vídeo mais longo sem emenda. ⇒ Formats different from the project use the matching layout (vertical applies each layer's vertical settings). To check first, use SHOW THIS FORMAT IN THE VIEW. On Instagram: Reels and Stories at 9:16, feed at 4:5; 30 fps and High quality, because Instagram recompresses the video. Loops close, so 2 or 4 loops make a longer video with no seam.
+Formatos mais altos que largos (como 1080×1920) usam o layout vertical, com ajustes próprios em cada camada, guardados à parte: o que você muda no vertical não mexe no horizontal. ⇒ Formats taller than wide (like 1080×1920) use the vertical layout, with each layer's own settings stored separately: what you change in vertical doesn't touch horizontal.
+Força da perspectiva ⇒ Perspective strength
+Força do glitch ⇒ Glitch strength
+Frequência ⇒ Frequency
+Fundo ⇒ Background
+Fusão ⇒ Crossfade
+GRAVAR UM LOOP ⇒ RECORD ONE LOOP
+Galáxia espiral ⇒ Spiral galaxy
+Ganho ⇒ Gain
+Ganho do áudio ⇒ Audio gain
+Gatilho ⇒ Trigger
+Gerados ⇒ Generated
+Giro ⇒ Spin
+Giro (voltas por 16 s) ⇒ Spin (turns per 16 s)
+Giro automático (voltas por 16 s) ⇒ Auto spin (turns per 16 s)
+Giro ° ⇒ Yaw °
+Grade (px) ⇒ Grid (px)
+Grade de altitude ⇒ Altitude grid
+Grade e réguas ⇒ Grid and rulers
+Granulação ⇒ Granulation
+Grava um loop em tempo real a partir da vista. Serve como rascunho; para entrega, use o MP4 ou a sequência PNG. ⇒ Records one loop in real time from the view. Good as a draft; for delivery, use MP4 or the PNG sequence.
+Gravando um loop… ⇒ Recording one loop…
+Graves ⇒ Bass
+Gráfico no visor ⇒ Graph in the viewer
+Grão ⇒ Grain
+Grão e faíscas ⇒ Grain and sparks
+Heliosfera ⇒ Heliosphere
+Horizonte e pontos cardeais ⇒ Horizon and cardinal points
+Imagem ou vídeo ⇒ Image or video
+Inclinação X ° ⇒ Tilt X °
+Inclinação Y ° ⇒ Tilt Y °
+Inclinação ° ⇒ Tilt °
+Inserir código ⇒ Insert code
+Instagram quadrado ⇒ Instagram square
+Instrumento ⇒ Instrument
+Instrumentos ⇒ Instruments
+Intensidade da reação ⇒ Reaction intensity
+Intervalo (s) ⇒ Interval (s)
+Intervalo mínimo (s) ⇒ Minimum interval (s)
+Ir para a cena ⇒ Go to the scene
+Início (s) ⇒ Start (s)
+Início da cena (s) ⇒ Scene start (s)
+Início do vídeo (s) ⇒ Video start (s)
+Janela de saída aberta: arraste para o projetor e dê duplo clique nela para tela cheia ⇒ Output window open: drag it to the projector and double-click it for full screen
+Jatos no beat ⇒ Jets on the beat
+JSON salvo ⇒ JSON saved
+Júpiter ⇒ Jupiter
+Kp a partir de ⇒ Kp from
+Kp em palavras ⇒ Kp in words
+LIGADO ⇒ ON
+LIGAR MIDI ⇒ ENABLE MIDI
+LIGAR MIDI. Na primeira vez, o navegador pede permissão. ⇒ ENABLE MIDI. The first time, the browser asks for permission.
+Lado noturno ⇒ Night side
+Largura ⇒ Width
+Largura (px, lista) ⇒ Width (px, list)
+Largura da barra ⇒ Bar width
+Legenda embaixo ⇒ Caption at the bottom
+Leve ⇒ Light
+Ligado, sem controlador. Conecte o cabo: ele aparece aqui sozinho. ⇒ On, no controller. Plug in the cable: it shows up here by itself.
+Ligar ⇒ On
+Ligar ou desligar ⇒ Turn on or off
+Ligue ao menos uma composição ⇒ Turn on at least one composition
+Limiar do gatilho (0 a 1) ⇒ Trigger threshold (0 to 1)
+Linha começando com * sai na cor de destaque. O texto antes do primeiro espaço é o rótulo; o resto é o valor. ⇒ A line starting with * uses the highlight color. The text before the first space is the label; the rest is the value.
+Linha de apoio ({ID} {CONF}) ⇒ Support line ({ID} {CONF})
+Linha de data ⇒ Date line
+Linha de data (usada pelo HUD) ⇒ Date line (used by the HUD)
+Linhas ⇒ Lines
+Linhas de campo ⇒ Field lines
+Log e telemetria ⇒ Log and telemetry
+Loop fechado ⇒ Closed loop
+Loop segue a música ⇒ Loop follows the music
+Luas ⇒ Moons
+MESTRE: em APRENDER, clique aqui e gire um knob ⇒ MASTER: in LEARN, click here and turn a knob
+MIDI ligado ⇒ MIDI on
+MIDI: clique no controle que quer comandar (parâmetro na aba CAMADA, composição à esquerda ou ação aqui) ⇒ MIDI: click the control you want to drive (parameter in the LAYER tab, composition on the left or action here)
+MIDI: clique num controle ⇒ MIDI: click a control
+MIDI: mova um controle ⇒ MIDI: move a control
+MONTAR RASCUNHO PELA MÚSICA ⇒ BUILD DRAFT FROM THE MUSIC
+MOV com áudio sem compressão ⇒ MOV with uncompressed audio
+MOV salvo com música ⇒ MOV saved with music
+MOVER desligado ⇒ MOVE off
+MOVER: Shift + duplo clique ⇒ MOVE: Shift + double-click
+MOVER: roda, cantos ⇒ MOVE: wheel, corners
+MOVER: setas ⇒ MOVE: arrow keys
+MP4 com Opus ⇒ MP4 with Opus
+MP4 com áudio Opus ⇒ MP4 with Opus audio
+MP4 salvo com música ⇒ MP4 saved with music
+Magnetosfera e aurora ⇒ Magnetosphere and aurora
+Mais (seções curtas) ⇒ More (short sections)
+Maiúsculas ⇒ Uppercase
+Manchas ⇒ Spots
+Marca o fim onde está o cursor da música (tecla ]) ⇒ Marks the end at the music cursor (] key)
+Marca o início onde está o cursor da música (tecla [) ⇒ Marks the start at the music cursor ([ key)
+Marcas de erro ⇒ Error marks
+Marte ⇒ Mars
+Menos (seções longas) ⇒ Fewer (long sections)
+Mercúrio ⇒ Mercury
+Meteoros por loop ⇒ Meteors per loop
+Microfone ⇒ Microphone
+Microfone desligado ⇒ Microphone off
+Microfone ligado ⇒ Microphone on
+Mistura ⇒ Blend
+Modo ⇒ Mode
+Moldura HUD ⇒ HUD frame
+Monta um rascunho que você confere antes de aplicar. ⇒ Builds a draft you review before applying.
+Montando o MOV… ⇒ Building the MOV…
+Montando o MP4… ⇒ Building the MP4…
+Mova o knob ou aperte o pad. ⇒ Move the knob or press the pad.
+Mover as camadas direto na prancheta (V) ⇒ Move layers directly on the artboard (V)
+Movimento de câmera ao longo da cena ⇒ Camera movement over the scene
+Máscara ⇒ Mask
+Média ⇒ Medium
+Médios ⇒ Mids
+Mídia ⇒ Media
+Mídia guardada no navegador ⇒ Media stored in the browser
+Música analisada ⇒ Music analyzed
+Música guardada no navegador ⇒ Music stored in the browser
+Música no vídeo ⇒ Music in the video
+NENHUMA ⇒ NONE
+NOAA direto ⇒ NOAA direct
+NOAA direto, sem servidor ⇒ NOAA direct, no server
+NOAA SWPC (direto) ⇒ NOAA SWPC (direct)
+Na faixa: arraste uma marca para mover a cena (ela gruda nos ataques; Shift solta). Clique no nome para selecionar e Delete apaga. ⇒ On the strip: drag a marker to move the scene (it snaps to attacks; Shift releases). Click the name to select it, and Delete removes it.
+Na hora ⇒ Immediately
+Na primeira vez, aceite o aviso do navegador. ⇒ The first time, accept the browser prompt.
+Nada para desfazer ⇒ Nothing to undo
+Nada para refazer ⇒ Nothing to redo
+Nenhum ainda. ⇒ None yet.
+Nenhuma camada selecionada. ⇒ No layer selected.
+Nenhuma música. Escolha um arquivo ou solte um áudio na vista. ⇒ No music. Choose a file or drop an audio file on the view.
+Netuno ⇒ Neptune
+No Firefox, o MIDI só funciona com a ferramenta aberta por http://localhost:3000/, com o servidor rodando. ⇒ In Firefox, MIDI only works with the tool opened at http://localhost:3000/, with the server running.
+No gráfico do visor, arraste as alças de início e fim; Shift+arrastar desenha um trecho novo. ⇒ In the viewer graph, drag the start and end handles; Shift+drag draws a new section.
+No próximo compasso ⇒ On the next bar
+No próximo tempo ⇒ On the next beat
+Nome ⇒ Name
+Nome da camada ⇒ Layer name
+Nome da composição ⇒ Composition name
+Nomes das estrelas ⇒ Star names
+Não reage ⇒ No reaction
+Núcleo ⇒ Core
+Número que sorteia tudo o que é aleatório: estrelas de fundo, glitches, fases das luas sem efeméride. A mesma semente dá sempre a mesma animação. ⇒ Number that drives everything random: background stars, glitches, moon phases without an ephemeris. The same seed always gives the same animation.
+O botão RECENTRALIZAR zera a câmera. ⇒ The RECENTER button resets the camera.
+O desenho continua mesmo com a janela principal escondida. ⇒ Drawing continues even with the main window hidden.
+O giro automático é em voltas por 16 s, arredondado a voltas inteiras por loop, para o vídeo fechar sem emenda. ⇒ Auto spin is in turns per 16 s, rounded to whole turns per loop, so the video loops without a seam.
+O gráfico no rodapé do visor mostra a forma de onda e as marcas do loop; clique ou arraste nele para ir a um ponto da faixa. Ele nunca entra no vídeo. ⇒ The graph at the bottom of the viewer shows the waveform and the loop marks; click or drag on it to go to a point in the track. It never goes into the video.
+O medidor mostra o som de agora (música tocando ou microfone), com a faixa escolhida acesa. ⇒ The meter shows the current sound (music playing or microphone), with the chosen band lit.
+O navegador bloqueou a janela de saída. Permita pop-ups para esta página e tente de novo. ⇒ The browser blocked the output window. Allow pop-ups for this page and try again.
+O navegador bloqueou o som: clique em TOCAR ⇒ The browser blocked the sound: click PLAY
+O navegador não deixou salvar o projeto (espaço cheio?). Salve um JSON na aba PROJETO para não perder nada. ⇒ The browser didn't allow saving the project (storage full?). Save a JSON in the PROJECT tab so you don't lose anything.
+O nome, o subtítulo e a linha de data aparecem no HUD. ⇒ The name, subtitle and date line appear in the HUD.
+O projeto fica salvo sozinho neste navegador. ⇒ The project is saved automatically in this browser.
+O trecho da música que toca em volta e entra no vídeo. ⇒ The section of the music that loops and goes into the video.
+OUVIR O TRECHO ⇒ PLAY THE SECTION
+Onda de choque ⇒ Shock wave
+Onda de densidade ⇒ Density wave
+Ondas de plasma ⇒ Plasma waves
+Ondas do Sol no beat ⇒ Sun waves on the beat
+Ondas no grave ⇒ Waves on bass
+Ondulação do vento ⇒ Wind ripple
+Opacidade ⇒ Opacity
+Opacidade da grade ⇒ Grid opacity
+Opus vazio ⇒ Empty Opus
+PADS → COMPOSIÇÕES ⇒ PADS → COMPOSITIONS
+PADS → COMPOSIÇÕES (aperte o primeiro pad) ⇒ PADS → COMPOSITIONS (press the first pad)
+PADS → COMPOSIÇÕES liga o primeiro pad apertado e os seguintes às composições 1, 2, 3… Knob num parâmetro vai do mínimo ao máximo; pad em liga/desliga alterna; pad num número leva ao máximo enquanto estiver apertado. Esc sai do modo aprender. ⇒ PADS → COMPOSITIONS maps the first pad pressed and the following ones to compositions 1, 2, 3… A knob on a parameter goes from minimum to maximum; a pad on an on/off switch toggles it; a pad on a number pushes it to the maximum while held. Esc leaves learn mode.
+PARAR ⇒ STOP
+PAUSA ⇒ PAUSE
+PAUSAR MÚSICA ⇒ PAUSE MUSIC
+PLAY/PAUSA ⇒ PLAY/PAUSE
+PNG DO QUADRO ATUAL ⇒ PNG OF THE CURRENT FRAME
+PNG salvo ⇒ PNG saved
+PROJETO ⇒ PROJECT
+Padrão da camada ⇒ Layer default
+Paisagem 4K ⇒ Landscape 4K
+Paisagem Full HD ⇒ Landscape Full HD
+Palavras (separe por |) ⇒ Words (separate with |)
+Para os pads, aperte um pad (nota), não um knob ⇒ For pads, press a pad (note), not a knob
+Partículas ⇒ Particles
+Parâmetros de URL: ⇒ URL parameters:
+Passo ⇒ Step
+Passo (px) ⇒ Step (px)
+Pelo preto ⇒ Through black
+Pelo som ⇒ By the sound
+Peso ⇒ Weight
+Pico retido ⇒ Peak hold
+Piscar (beats, 0 = não) ⇒ Blink (beats, 0 = no)
+Planeta ⇒ Planet
+Planetas ⇒ Planets
+Play e pause próprios: botão aqui, botão no gráfico do visor ou tecla M. Espaço pausa só a animação. ⇒ Its own play and pause: button here, button on the viewer graph, or the M key. Space pauses only the animation.
+Ponto ⇒ Dot
+Pontos ⇒ Points
+Posição da telemetria ⇒ Telemetry position
+Posição no loop ⇒ Position in the loop
+Posição original ⇒ Original position
+Precisa haver ao menos uma composição ⇒ There must be at least one composition
+Preencher ⇒ Fill
+Primária ⇒ Primary
+Prob. de glitch por beat ⇒ Glitch prob. per beat
+Profundidade (inclinação °) ⇒ Depth (tilt °)
+Projeto ⇒ Project
+Projeto aberto ⇒ Project opened
+Projeto atual ⇒ Current project
+Pulso no beat ⇒ Pulse on the beat
+Pós ⇒ Post
+Quadrado 1080×1080 ⇒ Square 1080×1080
+Qual parte do som move esta camada ⇒ Which part of the sound moves this layer
+Qual parte do som move esta camada. "Padrão da camada" usa as faixas que ela já lê nos parâmetros de reação. Graves, médios, agudos, ataques ou energia trocam todas pela escolhida; "Não reage" desliga o som nesta camada. O ganho aumenta ou diminui a reação. ⇒ Which part of the sound moves this layer. "Layer default" uses the bands it already reads in its reaction parameters. Bass, mids, treble, attacks or energy replace them all with the chosen one; "No reaction" turns sound off for this layer. Gain increases or decreases the reaction.
+Qualidade ⇒ Quality
+Qualidade da prévia ⇒ Preview quality
+Quando ⇒ When
+Quando um dado real passa do limite, a prancheta treme, pisca e mostra um aviso com os valores por alguns segundos. ⇒ When a real value crosses its threshold, the artboard shakes, flashes and shows a warning with the values for a few seconds.
+Quando: na hora, no próximo tempo ou no próximo compasso. A composição na fila pisca na lista. ⇒ When: immediately, on the next beat or on the next bar. The queued composition blinks in the list.
+RASCUNHO DO DIRETOR ⇒ DIRECTOR'S DRAFT
+RECENTRALIZAR ⇒ RECENTER
+RESTAURAR PADRÕES ⇒ RESTORE DEFAULTS
+RESTAURAR PRIMEIRA ABERTURA ⇒ RESET TO FIRST LAUNCH
+RESTAURAR PRIMEIRA ABERTURA apaga o projeto, a música e as mídias guardadas aqui e recarrega como na primeira vez. ⇒ RESET TO FIRST LAUNCH erases the project, music and media stored here and reloads as on the first visit.
+Raio (px) ⇒ Radius (px)
+Raio do céu ⇒ Sky radius
+Raios ⇒ Rays
+Raios até as luas ⇒ Rays to the moons
+Raios do Sol ⇒ Sun rays
+Raios-X a partir de ⇒ X-rays from
+Rascunho descartado: voltaram as cenas que você tinha ⇒ Draft discarded: your previous scenes are back
+Rastro ⇒ Trail
+Reage a ⇒ Reacts to
+Reagir ⇒ React
+Reação (grave no núcleo, agudo nas estrelas) ⇒ Reaction (bass in the core, treble in the stars)
+Reação ao ataque ⇒ Attack reaction
+Reação ao grave ⇒ Bass reaction
+Reação ao grave (espessura) ⇒ Bass reaction (thickness)
+Reação ao médio ⇒ Mid reaction
+Reação ao áudio ⇒ Audio reaction
+Reação por cena ⇒ Reaction per scene
+Rede ⇒ Net
+Refazer (Cmd+Shift+Z) ⇒ Redo (Cmd+Shift+Z)
+Relevo do globo ⇒ Globe relief
+Relógio ⇒ Clock
+Remover ⇒ Remove
+Renderiza quadro a quadro, sem perder quadros, e codifica no próprio navegador. É o formato para postar no Instagram, TikTok, YouTube ou WhatsApp. ⇒ Renders frame by frame, without dropping frames, and encodes in the browser itself. This is the format for posting on Instagram, TikTok, YouTube or WhatsApp.
+Renomear ⇒ Rename
+Repetir a cada (min) ⇒ Repeat every (min)
+Respiração ⇒ Breathing
+Retícula ⇒ Reticle
+Roda ⇒ Wheel
+Roda do mouse: zoom. ⇒ Mouse wheel: zoom.
+Rodapé ⇒ Footer
+Rotação ⇒ Rotation
+Rotação do campo ⇒ Field rotation
+Rotação ° ⇒ Rotation °
+Réguas ⇒ Rulers
+Rótulo ⇒ Label
+Rótulo do alvo ⇒ Target label
+Rótulos ⇒ Labels
+SALVAR JSON ⇒ SAVE JSON
+SALVAR JSON guarda tudo num arquivo, para levar a outro computador ou outro endereço (aberto pelo arquivo e por http://localhost:3000/, os projetos ficam separados). A música e as mídias não vão no JSON: escolha de novo. ⇒ SAVE JSON stores everything in a file, to take to another computer or another address (opened from the file and from http://localhost:3000/, projects are kept separate). Music and media are not included in the JSON: choose them again.
+SEM CORTE ⇒ NO TRIM
+SEM MÚSICA ⇒ NO MUSIC
+SEMENTE ⇒ SEED
+SEQUÊNCIA PNG (ZIP) ⇒ PNG SEQUENCE (ZIP)
+SOLTOU ⇒ RELEASED
+SÓ A VISTA ⇒ VIEW ONLY
+Salto de quadro ⇒ Frame skip
+Saturação ⇒ Saturation
+Saturno ⇒ Saturn
+Secundária ⇒ Secondary
+Segmentos por barra ⇒ Segments per bar
+Segue a energia ⇒ Follows the energy
+Seguindo o microfone. ⇒ Following the microphone.
+Seguir a câmera ⇒ Follow the camera
+Segundos ⇒ Seconds
+Sem AAC neste navegador: codificando o áudio em Opus… ⇒ No AAC in this browser: encoding audio as Opus…
+Sem AAC neste navegador: preparando o áudio sem compressão (MOV)… ⇒ No AAC in this browser: preparing uncompressed audio (MOV)…
+Sem AAC, salvar ⇒ Without AAC, save as
+Sem camadas. Adicione uma abaixo. ⇒ No layers. Add one below.
+Sem corte: a faixa inteira ⇒ No trim: the whole track
+Sem resposta, o motor usa valores típicos. O código {SRC} e os rótulos das camadas dizem de onde vem cada coisa. ⇒ With no response, the engine uses typical values. The {SRC} code and the layer labels say where everything comes from.
+Sequência salva ⇒ Sequence saved
+Shift + arrastar ⇒ Shift + drag
+Shift + arrastar move a camada selecionada. ⇒ Shift + drag moves the selected layer.
+Sobre a ferramenta ⇒ About the tool
+Sol ⇒ Sun
+Sol X ⇒ Sun X
+Sol Y ⇒ Sun Y
+Sol no foco ⇒ Sun at the focus
+Sol, Lua e planetas ⇒ Sun, Moon and planets
+Solte uma imagem, um vídeo ou um áudio ⇒ Drop an image, a video or an audio file
+Som ⇒ Sound
+Som do vídeo ⇒ Video sound
+Sortear ⇒ Randomize
+Status dos dados ⇒ Data status
+Subir ⇒ Move up
+Subtítulo ⇒ Subtitle
+Subtítulo (usado pelo HUD) ⇒ Subtitle (used by the HUD)
+Só corte seco ⇒ Hard cuts only
+Só fusão ⇒ Crossfades only
+Só o servidor ⇒ Server only
+Só o servidor local ⇒ Local server only
+TELA ⇒ SCREEN
+TELA CHEIA ⇒ FULL SCREEN
+TEMPO ⇒ TIME
+TESTAR ALERTA ⇒ TEST ALERT
+TOCAR ⇒ PLAY
+TOCAR MÚSICA ⇒ PLAY MUSIC
+TROCA DE COMPOSIÇÃO ⇒ COMPOSITION SWITCHING
+Tamanho ⇒ Size
+Tamanho (px) ⇒ Size (px)
+Tamanho da órbita ⇒ Orbit size
+Tamanho das luas ⇒ Moon size
+Tamanho do planeta ⇒ Planet size
+Tamanho e quadros por segundo da prancheta e dos vídeos. ⇒ Size and frames per second of the artboard and videos.
+Tamanho real ⇒ Actual size
+Tela cheia indisponível ⇒ Full screen unavailable
+Telemetria ⇒ Telemetry
+Telemetria (uma linha por item) ⇒ Telemetry (one line per item)
+Telemetria X ⇒ Telemetry X
+Telemetria Y ⇒ Telemetry Y
+Telemetria no topo ⇒ Telemetry on top
+Tempo ⇒ Time
+Tempo do vídeo ⇒ Video time
+Terra ⇒ Earth
+Texto ⇒ Text
+Tipo de camada ⇒ Layer type
+Tocando a música e na exportação, a vista segue as cenas; com a música pausada, mostra a composição selecionada para editar. ⇒ While the music plays and during export, the view follows the scenes; with the music paused, it shows the selected composition for editing.
+Toque a música (M) para ver. ⇒ Play the music (M) to see it.
+Torção ⇒ Twist
+Transição ⇒ Transition
+Transição (s) ⇒ Transition (s)
+Transição e duração em tempos da música. ⇒ Transition and duration in music beats.
+Transição pelo que o som faz na virada: subida forte vira flash ou glitch, subida moderada vira zoom, queda forte vira pelo preto, queda moderada vira varredura, mudança suave vira fusão. ⇒ Transition by what the sound does at the change: a strong rise becomes flash or glitch, a moderate rise becomes zoom, a strong drop becomes through black, a moderate drop becomes sweep, a gentle change becomes crossfade.
+Transições ⇒ Transitions
+Transições: fusão, corte seco, pelo preto, flash, glitch, varredura, íris, zoom ou deslize. ⇒ Transitions: crossfade, hard cut, through black, flash, glitch, sweep, iris, zoom or slide.
+Traço ⇒ Stroke
+Tremor ⇒ Shake
+Troca de alvo ⇒ Target switch
+Troca do grão (quadros) ⇒ Grain change (frames)
+Troca nos ataques ⇒ Change on attacks
+Trocar o fundo ⇒ Change the background
+Tudo se move com dados reais do espaço, coletados enquanto a ferramenta está aberta: ⇒ Everything moves with real space data, collected while the tool is open:
+Turbulência ⇒ Turbulence
+Título (vazio = nome do projeto) ⇒ Title (empty = project name)
+Título X ⇒ Title X
+Título Y ⇒ Title Y
+Título e telemetria ⇒ Title and telemetry
+Título no topo ⇒ Title on top
+USAR ⇒ USE
+USAR A DATA DE HOJE ⇒ USE TODAY'S DATE
+USAR põe o BPM estimado da música no projeto. ⇒ USE puts the music's estimated BPM into the project.
+Um arquivo de áudio que a animação acompanha. A faixa é analisada de uma vez ao carregar, então a reação vale ao vivo, no scrub e na exportação. ⇒ An audio file the animation follows. The track is analyzed once when loaded, so the reaction works live, while scrubbing and in the export.
+Um motor de visuais generativos do sistema solar. Sol, planetas, luas, céu e galáxia são camadas que se combinam em composições, andam no tempo da música e reagem ao som, para projetar ao vivo (VJ) ou exportar em vídeo. ⇒ A generative visuals engine for the solar system. Sun, planets, moons, sky and galaxy are layers combined into compositions; they follow the music's tempo and react to sound, for live projection (VJ) or video export.
+Uma janela só com a prancheta, sem a interface. Arraste para o projetor ou a segunda tela e dê duplo clique nela (ou F) para tela cheia. As teclas da ferramenta funcionam nela e o cursor some sozinho. ⇒ A window with only the artboard, without the interface. Drag it to the projector or second screen and double-click it (or press F) for full screen. The tool's keys work in it and the cursor hides by itself.
+Urano ⇒ Uranus
+VER ESTE FORMATO NA VISTA ⇒ SHOW THIS FORMAT IN THE VIEW
+VÍDEO (WEBM) ⇒ VIDEO (WEBM)
+VÍDEO MP4 (H.264 + AAC) ⇒ MP4 VIDEO (H.264 + AAC)
+Vale para a composição ativa. ⇒ Applies to the active composition.
+Vale para as teclas 1 a 9 e para os pads MIDI. Clicar na lista à esquerda troca na hora, para editar. ⇒ Applies to keys 1 to 9 and MIDI pads. Clicking the list on the left switches immediately, for editing.
+Valores ⇒ Values
+Varredura ⇒ Sweep
+Varredura (compassos) ⇒ Sweep (bars)
+Varredura (voltas por 16 s) ⇒ Sweep (turns per 16 s)
+Velocidade ⇒ Speed
+Velocidade base ⇒ Base speed
+Velocidade das barras ⇒ Bar speed
+Velocidade do traço ⇒ Stroke speed
+Velocidade do vídeo ⇒ Video speed
+Vento acima de (km/s) ⇒ Wind above (km/s)
+Vento solar ⇒ Solar wind
+Vermelho de alarme ⇒ Alarm red
+Via Láctea ⇒ Milky Way
+Vinheta ⇒ Vignette
+Voltas por 16 s ⇒ Turns per 16 s
+Vão entre segmentos ⇒ Gap between segments
+Vênus ⇒ Venus
+Vídeo salvo sem áudio ⇒ Video saved without audio
+Voltar ao estado de primeira abertura? Composições, cenas, música e mídias salvas aqui são apagadas (salve em JSON antes). ⌘Z não desfaz. ⇒ Go back to the first-launch state? Compositions, scenes, music and media saved here are erased (save a JSON first). ⌘Z won't undo it.
+WebM não suportado ⇒ WebM not supported
+WebM salvo ⇒ WebM saved
+X, o ✕ SEM CORTE do gráfico ou Alt+clique numa alça tiram o corte. ⇒ X, the graph's ✕ NO TRIM, or Alt+click on a handle removes the trim.
+abre a composição 2, ⇒ opens composition 2,
+abre com a câmera girada 30°, inclinada 55° e com zoom 1,2. O projeto fica salvo no navegador automaticamente. ⇒ opens with the camera rotated 30°, tilted 55° and zoomed 1.2. The project is saved in the browser automatically.
+abre só a vista. ⇒ opens the view only.
+ajustar ao loop ⇒ fit to loop
+alvos ⇒ targets
+analisando… ⇒ analyzing…
+anéis ⇒ rings
+apaga a cena selecionada na faixa do gráfico ⇒ deletes the selected scene on the graph strip
+arquivo não está neste navegador: escolha de novo ⇒ file is not in this browser: choose again
+arquivo passou de 4 GB: reduza a duração ou a qualidade ⇒ file exceeded 4 GB: reduce the duration or quality
+batidas por minuto do projeto ⇒ project beats per minute
+blackout: escurece a vista e a saída ⇒ blackout: darkens the view and the output
+blocos ⇒ blocks
+bz sul ⇒ bz south
+bz-sul ⇒ bz-south
+campo magnético interplanetário ⇒ interplanetary magnetic field
+campo magnético total (IMF) ⇒ total magnetic field (IMF)
+carregando… ⇒ loading…
+classe dos raios-X (GOES) ⇒ X-ray class (GOES)
+clima espacial ⇒ space weather
+clique para inserir no cursor ⇒ click to insert at the cursor
+cobrir ⇒ cover
+com música ⇒ with music
+cometa ⇒ comet
+compasso:tempo (001:1) ⇒ bar:beat (001:1)
+compassos ⇒ bars
+componente By ⇒ By component
+componente Bz (− = sul) ⇒ Bz component (− = south)
+confiança simulada (por batida) ⇒ simulated confidence (per beat)
+conter ⇒ contain
+cor ⇒ color
+coroa ⇒ corona
+círculo ⇒ circle
+código hex (por batida) ⇒ hex code (per beat)
+dados ⇒ data
+dados ao vivo ⇒ live data
+dados demonstração ⇒ demo data
+dados desatualizados ⇒ stale data
+dados desligados ⇒ data off
+dados offline ⇒ offline data
+data de hoje ⇒ today's date
+decodificando… ⇒ decoding…
+densidade do vento ⇒ wind density
+desfaz e refaz ⇒ undo and redo
+desligado ⇒ off
+duração do loop em segundos ⇒ loop length in seconds
+em cima ⇒ top
+embaixo ⇒ bottom
+erro ao abrir ⇒ error opening
+erro no IndexedDB ⇒ IndexedDB error
+esfera ⇒ sphere
+esfera de pontos ⇒ dot sphere
+esta ajuda ⇒ this help
+estrelas, Via Láctea e astros ⇒ stars, Milky Way and celestial bodies
+esticar ⇒ stretch
+evento ⇒ event
+faixa ⇒ band
+fluxo de raios-X ⇒ X-ray flux
+fonte: AO VIVO, DEMO ou TÍPICO ⇒ source: LIVE, DEMO or TYPICAL
+galáxia espiral ⇒ spiral galaxy
+gira (horizontal) e inclina (vertical) a câmera ⇒ rotates (horizontal) and tilts (vertical) the camera
+grade e réguas ⇒ grid and rulers
+grade e área segura ⇒ grid and safe area
+gravação cancelada pelo navegador ⇒ recording canceled by the browser
+grave ⇒ bass
+hora da medição (UTC) ⇒ measurement time (UTC)
+hora local agora ⇒ local time now
+imagem ou vídeo ⇒ image or video
+linhas ⇒ lines
+lista ⇒ list
+livre ⇒ free
+log e telemetria ⇒ log and telemetry
+luas ⇒ moons
+magnetosfera e aurora ⇒ magnetosphere and aurora
+marca início e fim do corte da música no cursor ⇒ marks the start and end of the music trim at the cursor
+marca o BPM (tap) ⇒ taps the BPM
+marca uma cena (a composição atual) no ponto da música ⇒ marks a scene (the current composition) at the point in the music
+modo MOVER: clique num elemento da prancheta e arraste. O centro dele gruda no meio e nos terços (Alt solta), Shift trava o eixo. Clicar de novo no mesmo ponto pega a camada de baixo ⇒ MOVE mode: click an element on the artboard and drag. Its center snaps to the middle and the thirds (Alt releases), Shift locks the axis. Clicking the same spot again picks the layer underneath
+moldura HUD ⇒ HUD frame
+monocromático ⇒ monochrome
+move a camada selecionada ⇒ moves the selected layer
+movem 1 px (Shift: 10) ⇒ move 1 px (Shift: 10)
+mudam o tamanho ⇒ change the size
+música carregada ⇒ loaded music
+nada ⇒ nothing
+negativo ⇒ negative
+nenhum arquivo ⇒ no file
+nenhuma ⇒ none
+nome da composição ⇒ composition name
+nome do projeto ⇒ project name
+não está neste navegador: escolha de novo ⇒ not in this browser: choose again
+não foi possível abrir o áudio ⇒ could not open the audio
+não suportado neste navegador ⇒ not supported in this browser
+o codificador AAC não devolveu áudio ⇒ the AAC encoder returned no audio
+o codificador não entregou a configuração H.264 ⇒ the encoder didn't provide the H.264 configuration
+o codificador reordenou quadros (B-frames); não suportado ⇒ the encoder reordered frames (B-frames); not supported
+o navegador não codifica AAC ⇒ the browser doesn't encode AAC
+ondas de plasma ⇒ plasma waves
+organismo ⇒ organism
+ou ⇒ or
+paleta ⇒ palette
+planetas ⇒ planets
+pontos da esfera (ou quadros) ⇒ sphere points (or frames)
+preenchido ⇒ filled
+projeto inválido ⇒ invalid project
+pós ⇒ post
+quadro atual / total ⇒ current frame / total
+quadros por segundo ⇒ frames per second
+raios-x ⇒ x-rays
+resolução ⇒ resolution
+resposta sem clima espacial ⇒ response without space weather
+sai do modo aprender do MIDI ⇒ leaves MIDI learn mode
+saída aberta ⇒ output open
+salva PNG ⇒ saves PNG
+satélite do vento solar ⇒ solar wind satellite
+sem Opus ⇒ no Opus
+sem endereço ⇒ no address
+sem música carregada: usa BPM e compassos ⇒ no music loaded: uses BPM and bars
+sem resposta ⇒ no response
+sinal ⇒ signal
+sintetico ⇒ synthetic
+sistema de um planeta ⇒ a planet's system
+só a vista ⇒ view only
+tamanho da música inteira ⇒ length of the whole track
+tamanho do trecho cortado da música ⇒ length of the trimmed music section
+tela cheia ⇒ full screen
+temperatura do vento ⇒ wind temperature
+tempo dentro do loop ⇒ time within the loop
+texto ⇒ text
+tira o corte: a faixa inteira de novo ⇒ removes the trim: the whole track again
+toca e pausa ⇒ play and pause
+toca e pausa só a música ⇒ play and pause the music only
+troca a composição (com a transição da aba AO VIVO) ⇒ switches the composition (with the LIVE tab transition)
+um quadro (Shift: dez) ⇒ one frame (Shift: ten)
+velocidade do vento solar ⇒ solar wind speed
+vento ⇒ wind
+vento solar ⇒ solar wind
+volta ao início ⇒ back to the start
+volta à posição original ⇒ back to the original position
+zoom da câmera ⇒ camera zoom
+índice Kp (0 a 9) ⇒ Kp index (0 to 9)
+órbitas ⇒ orbits
+Órbita ⇒ Orbit
+Órbitas ⇒ Orbits
+Íris ⇒ Iris
+Ângulo áureo ⇒ Golden angle
+Encélado ⇒ Enceladus
+Tétis ⇒ Tethys
+Titã ⇒ Titan
+Titânia ⇒ Titania
+Tritão ⇒ Triton
+Ganimedes ⇒ Ganymede
+Calisto ⇒ Callisto
+Fobos ⇒ Phobos
+Reia ⇒ Rhea
+Proteu ⇒ Proteus
+Nereida ⇒ Nereid
+Lua ⇒ Moon
+`;
+
+/* ---- vocabulário da prancheta (HUD, telemetria, log, alertas, nomes de camadas) ----
+   Trocado dentro das frases, da expressão mais longa para a mais curta, sempre em palavras inteiras. */
+const PH_TXT=`
+SISTEMA SOLAR AO VIVO ⇒ LIVE SOLAR SYSTEM
+SISTEMA SOLAR ⇒ SOLAR SYSTEM
+SISTEMA DE UM PLANETA ⇒ A PLANET'S SYSTEM
+VENTO SOLAR RÁPIDO ⇒ FAST SOLAR WIND
+VENTO SOLAR ⇒ SOLAR WIND
+VENTO RÁPIDO ⇒ FAST WIND
+VENTO, DENSIDADE E RAIOS-X AO VIVO ⇒ LIVE WIND, DENSITY AND X-RAYS
+VENTO ⇒ WIND
+DENSIDADE ⇒ DENSITY
+RAIOS-X E VENTO AO VIVO ⇒ LIVE X-RAYS AND WIND
+RAIOS-X GOES + VENTO SOLAR ⇒ GOES X-RAYS + SOLAR WIND
+RAIOS-X ⇒ X-RAYS
+FONTE ⇒ SOURCE
+COMPASSOS ⇒ BARS
+COMPASSO ⇒ BAR
+LIVRE ⇒ FREE
+CÂMERA GIRANDO ⇒ ROTATING CAMERA
+CÂMERA ⇒ CAMERA
+CÉU SOBRE SÃO PAULO ⇒ SKY OVER SÃO PAULO
+CÉU ACELERADO ⇒ SKY SPED UP
+CÉU AGORA ⇒ SKY NOW
+CÉU ⇒ SKY
+ACELERADO ⇒ SPED UP
+ÂNGULO ⇒ ANGLE
+PONTOS ⇒ POINTS
+FASE E POSIÇÃO DE AGORA ⇒ CURRENT PHASE AND POSITION
+FASES APROXIMADAS ⇒ APPROXIMATE PHASES
+FASE APROXIMADA ⇒ APPROXIMATE PHASE
+FASE DA LUA ⇒ MOON PHASE
+FASE ⇒ PHASE
+DA LUA ⇒ OF THE MOON
+ANÉIS E LUAS ⇒ RINGS AND MOONS
+ANÉIS ⇒ RINGS
+ALVOS ⇒ TARGETS
+ALVO ⇒ TARGET
+LUAS GALILEANAS ⇒ GALILEAN MOONS
+LUAS ⇒ MOONS
+LUA ⇒ MOON
+AO VIVO ⇒ LIVE
+VALORES TÍPICOS ⇒ TYPICAL VALUES
+TÍPICOS ⇒ TYPICAL
+TÍPICO ⇒ TYPICAL
+NORTE ⇒ NORTH
+SUL ⇒ SOUTH
+(norte) ⇒ (north)
+(sul) ⇒ (south)
+CALMO ⇒ QUIET
+ATIVO ⇒ ACTIVE
+calmo ⇒ quiet
+ativo ⇒ active
+tempestade ⇒ storm
+TEMPESTADE SOLAR ⇒ SOLAR STORM
+TEMPESTADE GEOMAGNÉTICA ⇒ GEOMAGNETIC STORM
+TEMPESTADE ⇒ STORM
+UA DO SOL ⇒ AU FROM THE SUN
+UA ⇒ AU
+MIN-LUZ ⇒ LIGHT-MIN
+RETRÓGRADA ⇒ RETROGRADE
+POSIÇÃO REAL ⇒ REAL POSITION
+POSIÇÕES REAIS ⇒ REAL POSITIONS
+POSIÇÕES CALCULADAS ⇒ COMPUTED POSITIONS
+POSIÇÕES DE AGORA ⇒ CURRENT POSITIONS
+ELEMENTOS ORBITAIS DO JPL ⇒ JPL ORBITAL ELEMENTS
+SEM DADOS ⇒ NO DATA
+ÓRBITAS PROCEDURAIS ⇒ PROCEDURAL ORBITS
+DADOS DESLIGADOS ⇒ DATA OFF
+DADOS ⇒ DATA
+DESATUALIZADOS ⇒ STALE
+DEMONSTRAÇÃO ⇒ DEMO
+DIRETO ⇒ DIRECT
+CLIMA ESPACIAL ⇒ SPACE WEATHER
+CAMPO (IMF) ⇒ FIELD (IMF)
+CAMPO MAGNÉTICO INTERPLANETÁRIO ⇒ INTERPLANETARY MAGNETIC FIELD
+CAMPO MAGNÉTICO PARA O SUL ⇒ MAGNETIC FIELD TURNED SOUTH
+CAMPO MAGNÉTICO ⇒ MAGNETIC FIELD
+CAMPO ABERTO ⇒ OPEN FIELD
+ONDAS DE PLASMA ⇒ PLASMA WAVES
+MERCÚRIO ⇒ MERCURY
+VÊNUS ⇒ VENUS
+TERRA E JÚPITER ⇒ EARTH AND JUPITER
+TERRA E LUA ⇒ EARTH AND MOON
+TERRA ⇒ EARTH
+MARTE ⇒ MARS
+JÚPITER E GALILEANAS ⇒ JUPITER AND GALILEANS
+JÚPITER ⇒ JUPITER
+SATURNO ⇒ SATURN
+URANO ⇒ URANUS
+NETUNO ⇒ NEPTUNE
+GANIMEDES ⇒ GANYMEDE
+CALISTO ⇒ CALLISTO
+FOBOS E DEIMOS ⇒ PHOBOS AND DEIMOS
+FOBOS ⇒ PHOBOS
+ENCÉLADO ⇒ ENCELADUS
+TÉTIS ⇒ TETHYS
+REIA ⇒ RHEA
+TITÃ ⇒ TITAN
+TITÂNIA ⇒ TITANIA
+TRITÃO EM ÓRBITA RETRÓGRADA ⇒ TRITON IN RETROGRADE ORBIT
+TRITÃO ⇒ TRITON
+PROTEU ⇒ PROTEUS
+NEREIDA ⇒ NEREID
+GRANDE MANCHA ESCURA ⇒ GREAT DARK SPOT
+CALOTAS, VALLES MARINERIS E OLYMPUS MONS ⇒ ICE CAPS, VALLES MARINERIS AND OLYMPUS MONS
+NASCER DO SOL ⇒ SUNRISE
+SOL ⇒ SUN
+VIA LÁCTEA ⇒ MILKY WAY
+ESTRELAS, LUA E PLANETAS ⇒ STARS, MOON AND PLANETS
+ESTRELAS, VIA LÁCTEA E ASTROS ⇒ STARS, MILKY WAY AND CELESTIAL BODIES
+COMETA ⇒ COMET
+A CAUDA DE ÍONS APONTA PARA LONGE DO SOL E SEGUE O VENTO SOLAR ⇒ THE ION TAIL POINTS AWAY FROM THE SUN AND FOLLOWS THE SOLAR WIND
+CAUDA DE ÍONS ⇒ ION TAIL
+ÓRBITA SINTÉTICA ⇒ SYNTHETIC ORBIT
+PERIÉLIO ⇒ PERIHELION
+PERDIDO ⇒ LOST
+MINUTOS POR SEGUNDO ⇒ MINUTES PER SECOND
+UMA VOLTA POR LOOP ⇒ ONE TURN PER LOOP
+AGORA ⇒ NOW
+COROA EM ESCALA ⇒ CORONA TO SCALE
+NÚCLEO PULSANDO COM OS RAIOS-X DO SOL ⇒ CORE PULSING WITH THE SUN'S X-RAYS
+BZ, KP E VENTO AO VIVO ⇒ LIVE BZ, KP AND WIND
+LONGITUDES MÉDIAS DE AGORA ⇒ CURRENT MEAN LONGITUDES
+VISTAS DE FORA DA ECLÍPTICA ⇒ SEEN FROM OUTSIDE THE ECLIPTIC
+O CÉU GIRANDO ⇒ THE SKY TURNING
+GALÁXIA ESPIRAL ⇒ SPIRAL GALAXY
+GALÁXIA ⇒ GALAXY
+HELIOSFERA ⇒ HELIOSPHERE
+PLANETÁRIO ⇒ PLANETARIUM
+ÓRBITAS INCLINADAS ⇒ TILTED ORBITS
+ÓRBITAS ⇒ ORBITS
+MAGNETOSFERA E AURORA ⇒ MAGNETOSPHERE AND AURORA
+ESFERA DE PONTOS ⇒ DOT SPHERE
+MOLDURA HUD ⇒ HUD FRAME
+LOG E TELEMETRIA ⇒ LOG AND TELEMETRY
+GRADE E RÉGUAS ⇒ GRID AND RULERS
+GRADE ⇒ GRID
+EVENTO ⇒ EVENT
+PÓS ⇒ POST
+FUNDO ⇒ BACKGROUND
+COROA ⇒ CORONA
+MÍDIA ⇒ MEDIA
+LEGENDA ⇒ CAPTION
+TÍTULO ⇒ TITLE
+TEXTO ⇒ TEXT
+IMAGEM OU VÍDEO ⇒ IMAGE OR VIDEO
+IMAGEM ⇒ IMAGE
+ESCOLHA UM ARQUIVO NO PAINEL OU SOLTE AQUI ⇒ CHOOSE A FILE IN THE PANEL OR DROP IT HERE
+ARQUIVO NÃO ENCONTRADO NESTE NAVEGADOR ⇒ FILE NOT FOUND IN THIS BROWSER
+ESCOLHA DE NOVO ⇒ CHOOSE AGAIN
+NÃO FOI POSSÍVEL ABRIR O ARQUIVO ⇒ COULD NOT OPEN THE FILE
+EJEÇÃO DE MASSA ⇒ MASS EJECTION
+ALINHAMENTO ⇒ ALIGNMENT
+KP ALTO ⇒ HIGH KP
+EXPLOSÃO SOLAR ⇒ SOLAR FLARE
+BZ SUL ⇒ BZ SOUTH
+CHOQUE INTERPLANETÁRIO ⇒ INTERPLANETARY SHOCK
+CHOQUE ⇒ SHOCK
+CLARÃO ⇒ FLASH
+CLASSE ⇒ CLASS
+TESTE DE ALERTA ⇒ ALERT TEST
+ALERTAS DE CLIMA ESPACIAL ⇒ SPACE WEATHER ALERTS
+ALERTA ⇒ ALERT
+JANELA DE SAÍDA ⇒ OUTPUT WINDOW
+PALETA REATIVA ⇒ REACTIVE PALETTE
+FAIXA DO ÁUDIO ⇒ AUDIO BAND
+TESTE ⇒ TEST
+BPM ESTIMADO ⇒ ESTIMATED BPM
+REAÇÃO DESLIGADA ⇒ REACTION OFF
+MÚSICA ⇒ MUSIC
+PALETA ⇒ PALETTE
+CENAS DESLIGADAS ⇒ SCENES OFF
+DUPLO CLIQUE AQUI OU TECLA N MARCA A COMPOSIÇÃO ATUAL NESTE PONTO DA MÚSICA ⇒ DOUBLE-CLICK HERE OR PRESS N TO MARK THE CURRENT COMPOSITION AT THIS POINT IN THE MUSIC
+CENAS ⇒ SCENES
+CENA ⇒ SCENE
+SEM CORTE ⇒ NO TRIM
+CORTE ⇒ TRIM
+TRECHO ⇒ SECTION
+PADRÃO ⇒ DEFAULT
+ÁCIDO ⇒ ACID
+ELÉTRICO ⇒ ELECTRIC
+ORGÂNICO ⇒ ORGANIC
+PAPEL ⇒ PAPER
+ALARME ⇒ ALARM
+AURORA ⇒ AURORA
+SAÍDA ⇒ OUTPUT
+DUPLO CLIQUE OU F: TELA CHEIA ⇒ DOUBLE-CLICK OR F: FULL SCREEN
+AS TECLAS DA FERRAMENTA FUNCIONAM AQUI ⇒ THE TOOL'S KEYS WORK HERE
+TSL ⇒ LST
+MOVER ⇒ MOVE
+MESTRE ⇒ MASTER
+ANTERIOR ⇒ PREVIOUS
+PRÓXIMA ⇒ NEXT
+GRAVE ⇒ BASS
+MÉDIO ⇒ MID
+AGUDO ⇒ TREBLE
+ATAQUE ⇒ ATTACK
+ENERGIA ⇒ ENERGY
+ÁUDIO ⇒ AUDIO
+AO VIVO ⇒ LIVE
+DESLIGADO ⇒ OFF
+LIGADO ⇒ ON
+CARREGANDO… ⇒ LOADING…
+COMPOSIÇÃO ⇒ COMPOSITION
+`;
+
+const parse=t=>{const m=new Map();for(const ln of t.split('\n')){const i=ln.indexOf(' ⇒ ');if(i>0)m.set(ln.slice(0,i).trim(),ln.slice(i+3).trim())}return m};
+const DM=parse(UI_TXT),PM=parse(PH_TXT);
+const reEsc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+/* palavras inteiras (letras e números em volta não contam); os espaços depois ficam no grupo 2 para manter colunas alinhadas */
+const PRE=new RegExp('(?<![\\p{L}\\p{N}_])('+[...PM.keys()].sort((a,b)=>b.length-a.length).map(reEsc).join('|')+')(?![\\p{L}\\p{N}_])( *)','gu');
+/* pontos cardeais desenhados sozinhos no céu: L (leste) e O (oeste) */
+const SOLO=new Map([['L','E'],['O','W']]);
+const CPAT=[[/(\d+) mil K\b/g,'$1,000 K'],[/ EM N_/g,' AT N_'],[/(\d+) LUAS\b/g,'$1 MOONS'],[/(\d+) LUA\b/g,'$1 MOON']];
+
+function phr(s){const tab=/\S {2,}\S/.test(s);return s.replace(PRE,(m,k,sp)=>{const e=PM.get(k);if(e===undefined)return m;if(tab&&sp.length)return e+' '.repeat(Math.max(1,sp.length+k.length-e.length));return e+sp})}
+
+const CC=new Map(),CU=new Map(),DONE=new Set();
+const cap=m=>{if(m.size>6000)m.clear()};
+/* prancheta: frase exata, depois as regras com números, depois o vocabulário */
+function tCV(s){if(!s)return s;let o=CC.get(s);if(o!==undefined)return o;if(DONE.has(s))return s;
+ o=DM.get(s);if(o===undefined)o=PM.get(s);if(o===undefined)o=SOLO.get(s);
+ if(o===undefined){o=s;if(/[A-Za-zÀ-ÿ]/.test(o)){for(const[re,r]of CPAT)o=o.replace(re,r);o=phr(o)}}
+ cap(CC);CC.set(s,o);if(o!==s){if(DONE.size>6000)DONE.clear();DONE.add(o)}return o}
+
+/* frases com valores no meio (status, avisos, progresso) */
+const T=s=>tUI(s);
+const tail=t=>t===' Nenhum limite passado.'?' No threshold crossed.':t===' Dados típicos: alertas parados.'?' Typical data: alerts paused.':t.replace(/^ Acima do limite: (.+)\.$/,(m,l)=>' Above threshold: '+l.split(', ').map(x=>({'raios-X':'X-rays','vento':'wind'})[x]||x).join(', ')+'.');
+const PAT=[
+ [/^Padrão: (.+)$/,'Default: $1'],
+ [/^intensidade (\d+)%$/,'intensity $1%'],
+ [/^(\d+) quadros$/,'$1 frames'],
+ [/^Loop: (\d+) quadros$/,'Loop: $1 frames'],
+ [/^prévia (\d+)%$/,'preview $1%'],
+ [/^câmera (.+)$/,'camera $1'],
+ [/^música (\d.*)$/,'music $1'],
+ [/^mestre (\d+)%$/,'master $1%'],
+ [/^Quadro ([\d.]+) ms de ([\d.]+)$/,'Frame $1 ms of $2'],
+ [/^(\d+) por segundo$/,'$1 per second'],
+ [/^Quadro (\d+) de (\d+)$/,'Frame $1 of $2'],
+ [/^(\d+) q\/s$/,'$1 fps'],
+ [/^falta ~(\d+) s$/,'~$1 s left'],
+ [/^ZIP com (\d+) quadros salvo \(([\d.]+) MB\)\.$/,'ZIP with $1 frames saved ($2 MB).'],
+ [/^O loop inteiro tem (\d+) quadros \(([\d.]+) s\)\. Em HD cada quadro tem de 1 a 3 MB; o ZIP é montado na memória\. Para virar vídeo:$/,'The whole loop has $1 frames ($2 s). In HD each frame is 1 to 3 MB; the ZIP is built in memory. To turn it into a video:'],
+ [/^Tudo sai na resolução do projeto \((.+)\), na composição ativa\.$/,'Everything comes out at the project resolution ($1), in the active composition.'],
+ [/^(\d+) trocas? ao longo da faixa \((\d+) s\)\. O gráfico do visor mostra a cor de cada trecho\.$/,(m,n,s)=>`${n} change${n==='1'?'':'s'} along the track (${s} s). The viewer graph shows the color of each section.`],
+ [/^analisada em (\d+) leituras por segundo$/,'analyzed at $1 readings per second'],
+ [/^BPM estimado (\d+)$/,'estimated BPM $1'],
+ [/^analisando… (\d+)%$/,'analyzing… $1%'],
+ [/^Trecho (\S+) → (\S+)$/,'Section $1 → $2'],
+ [/^([\d.]+) s de (\S+)$/,'$1 s of $2'],
+ [/^Sem corte: a faixa inteira \((.+)\)$/,'No trim: the whole track ($1)'],
+ [/^tamanho travado em ([\d.]+) s pela exportação MP4 \(Duração: Segundos\); as alças movem a janela; SEM CORTE volta à faixa inteira$/,'length locked at $1 s by the MP4 export (Duration: Seconds); the handles move the window; NO TRIM goes back to the whole track'],
+ [/^Início do corte em (.+)$/,'Trim start at $1'],
+ [/^Fim do corte em (.+)$/,'Trim end at $1'],
+ [/^Rascunho com (\d+) cenas: toque a música para ver, depois aplique ou descarte$/,'Draft with $1 scenes: play the music to see it, then apply or discard'],
+ [/^(\d+) cenas aplicadas \(⌘Z desfaz\)$/,'$1 scenes applied (⌘Z undoes)'],
+ [/^Rascunho: ([^·]+)$/,(m,a)=>'Draft: '+a.split(' → ').map(it=>{const q=it.match(/^(\S+) (.+?)(?: \((.+)\))?$/);return q?q[1]+' '+T(q[2])+(q[3]?' ('+T(q[3])+')':''):it}).join(' → ')],
+ [/^(\d+) seções$/,'$1 sections'],
+ [/^grade (.+?)\. Toque a música para ver na vista; depois aplique ou descarte no quadro do rascunho, acima\.$/,(m,g)=>'grid '+g.replace('compassos a partir de','bars from').replace('ajuste por tempo (tempo forte incerto)','fitted per beat (uncertain downbeat)').replace('sem grade','none')+'. Play the music to see it in the view; then apply or discard in the draft box above.'],
+ [/^RASCUNHO DO DIRETOR · (.+)$/,(m,a)=>"DIRECTOR'S DRAFT · "+tCV(a)],
+ [/^APLICAR (\d+) CENAS?$/,(m,n)=>`APPLY ${n} SCENE${n==='1'?'':'S'}`],
+ [/^Não foi possível: (.+)$/,(m,a)=>"Couldn't do it: "+T(a)],
+ [/^Sem microfone: (.+)$/,'No microphone: $1'],
+ [/^(Mídia|Música) aberta, mas não guardada no navegador \((.+)\)$/,(m,k,e)=>(k==='Mídia'?'Media':'Music')+' opened, but not stored in the browser ('+e+')'],
+ [/^falha na análise: (.+)$/,'analysis failed: $1'],
+ [/^Não deu para preparar a janela de saída: (.+)$/,"Couldn't prepare the output window: $1"],
+ [/^O navegador não liberou o MIDI \((.+)\)\.$/,"The browser didn't allow MIDI ($1)."],
+ [/^Não abriu o MIDI: (.+)$/,"Couldn't open MIDI: $1"],
+ [/^Agora mova um knob ou aperte um pad: ([\s\S]+)$/,(m,a)=>'Now move a knob or press a pad: '+T(a)],
+ [/^Conectado: (.+)\.$/,(m,a)=>'Connected: '+a.split(', ').map(x=>x==='entrada'?'input':x).join(', ')+'.'],
+ [/^([\s\S]+) Na primeira vez, aceite o aviso do navegador\.$/,(m,a)=>T(a)+' The first time, accept the browser prompt.'],
+ [/^Última mensagem: (.+)$/,(m,a)=>'Last message: '+T(a)],
+ [/^NOTA (\d+)$/,'NOTE $1'],[/^CANAL (\d+)$/,'CHANNEL $1'],[/^VELOCIDADE (\d+)$/,'VELOCITY $1'],[/^VALOR (\d+)$/,'VALUE $1'],
+ [/^Notas (\d+) a (\d+) → composições 1 a (\d+)$/,'Notes $1 to $2 → compositions 1 to $3'],
+ [/^COMPOSIÇÃO (.+)$/,(m,a)=>'COMPOSITION '+(a==='(apagada)'?'(deleted)':T(a))],
+ [/^AÇÃO (.+)$/,(m,a)=>'ACTION '+T(a)],
+ [/^\(camada apagada\)$/,'(layer deleted)'],
+ [/^(Desligados\. )?Agora: Kp (\S+) · raios-X (\S+) · Bz (\S+) nT · vento (\d+) km\/s\.(.*)$/,(m,off,kp,x,bz,w,t)=>(off?'Off. ':'')+`Now: Kp ${kp} · X-rays ${x} · Bz ${bz} nT · wind ${w} km/s.`+tail(t)],
+ [/^Ao vivo (direto do NOAA|pelo servidor local); (planetas calculados|planetas do JPL Horizons)\.$/,(m,v,p)=>'Live '+(v==='direto do NOAA'?'directly from NOAA':'through the local server')+'; '+(p==='planetas calculados'?'computed planets':'planets from JPL Horizons')+'.'],
+ [/^Desatualizado \((.+)\)\.$/,(m,e)=>'Stale ('+T(e)+').'],
+ [/^Sem resposta(?: \((.+)\))?: valores típicos\.$/,(m,e)=>'No response'+(e?' ('+T(e)+')':'')+': typical values.'],
+ [/^(vídeo|imagem) (\d+×\d+)$/,(m,k,d)=>(k==='vídeo'?'video ':'image ')+d],
+ [/^Remover "([\s\S]+)"\?$/,(m,a)=>'Remove "'+T(a)+'"?'],
+ [/^Vista em (.+)$/,'View at $1'],
+ [/^Exportação cancelada: o áudio falhou \((.+)\)\.$/,(m,e)=>'Export canceled: the audio failed ('+T(e)+').'],
+ [/^O áudio não entrou no vídeo: ([\s\S]+)\.\n\nSalvar o MP4 mesmo assim, sem áudio\?$/,(m,e)=>"The audio didn't make it into the video: "+T(e)+'.\n\nSave the MP4 anyway, without audio?'],
+ [/^a música não está pronta \((.+)\)$/,(m,e)=>"the music isn't ready ("+T(e)+')'],
+ [/^não consegui ler o arquivo da música \((.+)\)$/,"couldn't read the music file ($1)"],
+ [/^não consegui decodificar a música \((.+)\)$/,"couldn't decode the music ($1)"],
+ [/^o codificador AAC falhou \((.+)\)$/,'the AAC encoder failed ($1)'],
+ [/^Codificando o áudio… (\d+)%$/,'Encoding audio… $1%'],
+ [/^H\.264 indisponível: (.+)$/,'H.264 unavailable: $1'],
+ [/^Não abriu: (.+)$/,"Couldn't open: $1"],
+ [/^(\d+) mil K$/,'$1,000 K'],
+ [/^(\d+) \(tempestade (G\d)\)$/,'$1 ($2 storm)'],
+ [/^Classe (\w[\w.]*)$/,'Class $1'],
+];
+
+/* interface: frase exata, regras com valores, partes separadas por " · ", número na frente, maiúsculas como na prancheta */
+function tUI(s){if(!s||!/[A-Za-zÀ-ÿ]/.test(s))return s;let o=CU.get(s);if(o!==undefined)return o;
+ o=DM.get(s);
+ if(o===undefined)for(const[re,f]of PAT){const m=s.match(re);if(m){o=typeof f==='function'?f(...m):s.replace(re,f);break}}
+ if(o===undefined&&s.includes(' · ')){const ps=s.split(' · '),qs=ps.map(tUI);if(qs.some((q,i)=>q!==ps[i]))o=qs.join(' · ')}
+ if(o===undefined){const m=s.match(/^(\d+\s+)(\S[\s\S]*)$/);if(m){const r=tUI(m[2]);if(r!==m[2])o=m[1]+r}}
+ if(o===undefined&&!/[a-zà-ÿ]/.test(s))o=tCV(s);
+ if(o===undefined)o=s;cap(CU);CU.set(s,o);return o}
+/* mantém os espaços de fora */
+const keep=(s,f)=>{const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/);if(!m[2])return s;const r=f(m[2]);return r===m[2]?s:m[1]+r+m[3]};
+/* valores de campos de texto: por linha e por "|", preservando o * de destaque */
+const tVal=v=>v.split('\n').map(l=>l.split('|').map(p=>{const m=p.match(/^(\s*\*?)([\s\S]*)$/);return m[1]+keep(m[2],tCV)}).join('|')).join('\n');
+
+/* ---- página ---- */
+const SKIP=new Set(['SCRIPT','STYLE','TEXTAREA','CODE','PRE']);
+const ATTRS=['title','aria-label','placeholder'];
+const TX=new WeakMap(),AX=new WeakMap(),VX=new WeakMap();
+const skipEl=el=>!el||SKIP.has(el.tagName)||!!el.closest('[data-i18n="off"]');
+function trText(n){const p=n.parentElement;if(skipEl(p))return;const rec=TX.get(n),cur=n.data;if(rec&&cur===rec[1])return;
+ if(LANG!=='en'){if(rec)TX.delete(n);return}const out=keep(cur,tUI);if(out!==cur){TX.set(n,[cur,out]);n.data=out}else if(rec)TX.delete(n)}
+function trAttrs(el){if(skipEl(el))return;const list=el.tagName==='OPTGROUP'?ATTRS.concat('label'):ATTRS;let m=AX.get(el);
+ for(const a of list){const v=el.getAttribute(a);if(v==null)continue;const rec=m&&m[a];if(rec&&v===rec[1])continue;if(LANG!=='en'){if(rec)delete m[a];continue}
+  const out=keep(v,tUI);if(out!==v){if(!m){m={};AX.set(el,m)}m[a]=[v,out];el.setAttribute(a,out)}}}
+/* campos com o texto padrão das camadas (telemetria, palavras, nomes): traduzidos para exibição; o projeto só muda se você editar */
+const valOk=el=>(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&(el.type==='text'||!el.getAttribute('type'))))&&!el.classList.contains('hex')&&el.id!=='dApi'&&el.id!=='pDate'&&!!el.closest('#panel');
+function trVal(el){if(!valOk(el)||el===document.activeElement)return;const rec=VX.get(el),v=el.value;if(rec&&v===rec[1])return;
+ if(LANG!=='en'){if(rec)VX.delete(el);return}const out=tVal(v);if(out!==v){VX.set(el,[v,out]);el.value=out}else if(rec)VX.delete(el)}
+function walk(root){if(root.nodeType===3){trText(root);return}if(root.nodeType!==1)return;if(root.tagName==='SCRIPT'||root.tagName==='STYLE')return;
+ trAttrs(root);if(root.tagName==='INPUT'||root.tagName==='TEXTAREA'){trVal(root);return}
+ const w=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);for(let n=w.nextNode();n;n=w.nextNode()){if(n.nodeType===3)trText(n);else{trAttrs(n);if(n.tagName==='INPUT'||n.tagName==='TEXTAREA')trVal(n)}}}
+function restore(){const w=document.createTreeWalker(document.body,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);
+ for(let n=w.nextNode();n;n=w.nextNode()){if(n.nodeType===3){const r=TX.get(n);if(r){if(n.data===r[1])n.data=r[0];TX.delete(n)}continue}
+  const m=AX.get(n);if(m){for(const a in m)if(n.getAttribute(a)===m[a][1])n.setAttribute(a,m[a][0]);AX.delete(n)}
+  const v=VX.get(n);if(v){if(n.value===v[1])n.value=v[0];VX.delete(n)}}}
+const MO=new MutationObserver(rs=>{if(LANG!=='en')return;for(const r of rs){if(r.type==='childList')r.addedNodes.forEach(walk);else if(r.type==='characterData')trText(r.target);else if(r.type==='attributes')trAttrs(r.target)}});
+MO.observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTRS.concat('label')});
+
+/* ---- prancheta: tudo o que é desenhado como texto passa pela tradução (e a largura medida bate com a desenhada) ---- */
+for(const C of [window.CanvasRenderingContext2D,window.OffscreenCanvasRenderingContext2D]){if(!C)continue;
+ for(const k of['fillText','strokeText']){const f=C.prototype[k];C.prototype[k]=function(t,...a){return f.call(this,LANG==='en'&&typeof t==='string'?tCV(t):t,...a)}}
+ const mt=C.prototype.measureText;C.prototype.measureText=function(t){return mt.call(this,LANG==='en'&&typeof t==='string'?tCV(t):t)}}
+
+/* ---- diálogos ---- */
+for(const k of['alert','confirm','prompt']){const f=window[k];if(typeof f!=='function')continue;window[k]=function(msg,...a){return f.call(window,LANG==='en'&&msg!=null?tUI(String(msg)):msg,...a)}}
+
+/* ---- troca de idioma ---- */
+function marks(){document.querySelectorAll('[data-lang]').forEach(b=>{const on=b.dataset.lang===LANG;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')})}
+function setLang(l){if(l!=='en'&&l!=='pt')return;const ch=l!==LANG;LANG=l;try{localStorage.setItem(LKEY,l)}catch(e){}
+ document.documentElement.lang=l==='en'?'en':'pt-BR';CU.clear();CC.clear();DONE.clear();
+ if(l==='en')walk(document.body);else restore();
+ marks();
+ if(ch){try{if(typeof refresh==='function')refresh()}catch(e){}
+  try{if(typeof ST!=='undefined'){if(ST.tab==='vivo'&&typeof renderLive==='function')renderLive();if(ST.tab==='midi'&&typeof renderMidi==='function')renderMidi();ST.vd=true;ST.dirty=true}}catch(e){}
+  try{if(typeof hpClose==='function')hpClose();if(typeof tpClose==='function')tpClose()}catch(e){}}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lang]');if(b){e.preventDefault();setLang(b.dataset.lang)}});
+
+/* depois que o motor carrega: o embaralhamento de letras recebe o texto já traduzido, e a janela de saída também */
+document.addEventListener('DOMContentLoaded',()=>{
+ if(typeof window.scr==='function'){const s0=window.scr;window.scr=function(t,...a){return s0.call(this,LANG==='en'&&typeof t==='string'?tCV(t):t,...a)}}
+ if(typeof window.outOpen==='function'){const o0=window.outOpen;window.outOpen=function(...a){const r=o0.apply(this,a);try{if(LANG==='en'&&typeof OW!=='undefined'&&OW.w&&!OW.w.closed){const d=OW.w.document;d.title=tCV(d.title);const tip=d.getElementById('tip');if(tip)tip.textContent=tCV(tip.textContent)}}catch(e){}return r}}
+ if(LANG==='en')walk(document.body);marks();
+ try{if(LANG==='en'&&typeof ST!=='undefined')ST.vd=true}catch(e){}});
+
+window.I18N={get lang(){return LANG},set:setLang,ui:tUI,canvas:tCV};
+})();
+</script>
+<!-- i18n:fim -->
 <script>
 'use strict';
 /* ===== utilidades ===== */

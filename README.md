@@ -32,6 +32,7 @@ Tudo roda no navegador, num único arquivo HTML, sem instalar nada.
 - **Música:** solte um áudio e as camadas reagem a graves, médios, agudos e ataques. As cenas trocam as composições no tempo da faixa, e um diretor automático monta as cenas sozinho.
 - **Ao vivo:** janela de saída para o projetor, troca de composição pelas teclas 1 a 9 ou por controlador MIDI, blackout e alertas de clima espacial.
 - **Exportação:** MP4 pronto para Reels, feed e YouTube (vertical, quadrado, Full HD, 4K), PNG, sequência PNG e WebM.
+- **Português e inglês:** botão PT/EN no topo e na tela de abertura (ou `?lang=en` na URL). A tradução vale também para os textos desenhados na prancheta, então os vídeos saem no idioma escolhido.
 
 ## Dados ao vivo
 
@@ -113,6 +114,7 @@ A trilha do showreel foi gerada para este projeto e não usa música de terceiro
 1. Baixe este repositório (botão **Code → Download ZIP**) ou clone com `git clone`.
 2. Abra o `index.html` no Chrome, no Edge ou no Firefox. Não precisa instalar nada, nem rodar servidor ou criar conta.
 3. A tela de abertura explica a ferramenta e as fontes dos dados. Escolha uma composição à esquerda e explore.
+4. Para trocar o idioma, use PT ou EN no topo. A escolha fica salva no navegador; na primeira abertura, vale o idioma do navegador.
 
 <p align="center"><img src="docs/img/abertura.png" alt="Tela de abertura: o que é a ferramenta, quem fez e de onde vêm os dados ao vivo" width="640"></p>
 
@@ -297,7 +299,8 @@ Para criar uma camada nova, acrescente um `reg(...)` e uma entrada em `FAMILIES`
   - 17 example compositions and 21 layer types.
   - Music analysis, with scenes and an automatic director.
   - Output window, 1–9 / MIDI switching and space-weather alerts.
-  - Direct manipulation mode (MOVER).
+  - Direct manipulation mode (MOVE).
   - Export to MP4 (Reels, feed, square, Full HD, 4K), PNG, PNG sequence and WebM.
-- **Built as a single HTML file** with Canvas 2D and no dependencies, written in collaboration with Claude Code. The interface and the [manual](docs/MANUAL.md) are in Portuguese.
+- **Built as a single HTML file** with Canvas 2D and no dependencies, written in collaboration with Claude Code.
+- **Language:** the interface is available in English and Portuguese. Use the PT/EN switch at the top or on the opening screen, or open `index.html?lang=en`. On the first visit it follows the browser language, and the choice is remembered. Text drawn on the artboard (HUD, telemetry, alerts) is translated too, so exported videos come out in the chosen language. The [manual](docs/MANUAL.md) is in Portuguese.
 - **License:** code under [MIT](LICENSE). Please keep the copyright notice and credit *"SOLARVIEWS & GALAXY GRAPHICS ENGINE by Marcius Monteiro (marciusm.com)"*. The IBM Plex Mono font is under the SIL OFL 1.1.

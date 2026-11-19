@@ -119,7 +119,13 @@ A interface e os textos desenhados (HUD, log, telemetria, clima, rótulos) usam 
 | S | salva PNG |
 | ? | ajuda |
 
-URL: `?comp=4` abre a composição 4; `?clean` abre só a vista; `?cam=30,55,1.2` abre com a câmera girada 30°, inclinada 55° e zoom 1,2.
+URL: `?comp=4` abre a composição 4; `?clean` abre só a vista; `?cam=30,55,1.2` abre com a câmera girada 30°, inclinada 55° e zoom 1,2; `?lang=en` ou `?lang=pt` escolhe o idioma.
+
+### Idioma
+
+Os botões PT e EN, no topo e na tela de abertura, trocam o idioma da interface e dos textos desenhados na prancheta (HUD, telemetria, log, alertas, rótulos). Por isso a exportação de vídeo e de PNG sai no idioma escolhido. A escolha fica salva no navegador; na primeira abertura, vale o idioma do navegador.
+
+O projeto não muda de idioma. As composições de exemplo continuam guardadas em português e são mostradas traduzidas. Nos campos de texto das camadas (telemetria, palavras, nomes), o texto padrão aparece traduzido; se você editar o campo, é o texto que você vê que fica salvo.
 
 ## Códigos de texto
 
@@ -162,6 +168,7 @@ O arquivo fica guardado no próprio navegador (IndexedDB), não no projeto. O JS
 
 ## Estrutura do código
 
+0. Idioma: um script à parte, antes do motor (entre os marcadores `i18n:início` e `i18n:fim`). O motor continua escrito em português; em inglês, essa camada traduz na exibição. Um `MutationObserver` traduz textos, dicas e campos da página e guarda o original para voltar ao português. `fillText`, `strokeText` e `measureText` traduzem o que vai para o canvas, e `scr` (o embaralhamento de letras) recebe o texto já traduzido. O dicionário fica em `UI_TXT` (frases da interface) e `PH_TXT` (vocabulário da prancheta, trocado palavra por palavra mantendo as colunas do log), uma entrada por linha no formato `português ⇒ inglês`; as frases com valores no meio ficam em `PAT`. Para traduzir um texto novo, acrescente uma linha. `I18N.set('en')` troca pelo console.
 1. Utilidades, tempo musical, paletas.
 2. Câmera (`camMake`, `CAM`, `camP`) e dados ao vivo: `dataFetch`, `dataValues` (entra no quadro como `F.d`), `solarBodies`, `solarScreen` (`pos` no plano, `scr` na tela).
 3. Camadas: `reg(tipo, rótulo, parâmetros, desenho, {cam})`; cada desenho recebe o contexto 2D e `R = {p, F, W, H, u, comp, pal}`. `cam:'plane'` recebe a transformação da câmera no canvas, `cam:'own'` projeta por conta própria com `CAM.at(x, y).P(...)`, sem `cam` a camada fica parada.
