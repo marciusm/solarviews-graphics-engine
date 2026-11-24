@@ -2898,9 +2898,10 @@ async function pcmAudio(D,t0){const SR=48000,r=await songRender(D,t0,SR),L=r.len
  for(let i=0;i<L;i+=SR){const n=Math.min(SR,L-i),b=new Uint8Array(n*4),dv=new DataView(b.buffer);for(let k=0;k<n;k++){const a=Math.max(-1,Math.min(1,c0[i+k])),z=Math.max(-1,Math.min(1,c1[i+k]));dv.setInt16(k*4,a<0?a*32768:a*32767,true);dv.setInt16(k*4+2,z<0?z*32768:z*32767,true)}blocks.push(b)}
  return{kind:'a',pcm:true,ts:SR,sr:SR,ch:2,fb:4,blocks}}
 async function exportMp4(){if(XP.run||XP.rec)return;if(!window.VideoEncoder)return toast('Este navegador não codifica MP4 (use Chrome, Edge ou Safari recentes)');
- const[W,H]=outSize(),fps=P.canvas.fps,D=outDur(),N=Math.max(1,Math.round(D*fps)),q=(OUTQ[P.out.q]||OUTQ.alta)[1],br=Math.round(clamp(W*H*fps*q,1e6,80e6)),big=W*H>1920*1088,codec=big?'avc1.640033':'avc1.640028',prog=t=>{const e=$('#mProg');if(e)e.textContent=t};
- const cfg={codec,width:W,height:H,bitrate:br,framerate:fps,bitrateMode:'variable',latencyMode:'quality',avc:{format:'avc'}};
- try{const sp=await VideoEncoder.isConfigSupported(cfg);if(!sp.supported)return toast(`H.264 ${W}×${H} não suportado neste navegador`)}catch(e){return toast('H.264 indisponível: '+e.message)}
+ const[W,H]=outSize(),fps=P.canvas.fps,D=outDur(),N=Math.max(1,Math.round(D*fps)),q=(OUTQ[P.out.q]||OUTQ.alta)[1],br=Math.round(clamp(W*H*fps*q,1e6,80e6)),big=W*H>1920*1088,prog=t=>{const e=$('#mProg');if(e)e.textContent=t};
+ /* Constrained Baseline primeiro: nunca usa B-frames (o montador de MP4 não grava quadros fora de ordem); High só se o Baseline não servir */
+ const codecs=big?['avc1.42E033','avc1.640033']:['avc1.42E02A','avc1.640028'];let cfg=null;
+ try{for(const codec of codecs){const c={codec,width:W,height:H,bitrate:br,framerate:fps,bitrateMode:'variable',latencyMode:'quality',avc:{format:'avc'}},sp=await VideoEncoder.isConfigSupported(c);if(sp.supported){cfg=c;break}}if(!cfg)return toast(`H.264 ${W}×${H} não suportado neste navegador`)}catch(e){return toast('H.264 indisponível: '+e.message)}
  if(document.fonts)try{await document.fonts.ready}catch(e){}
  const was=ST.playing,cw=P.canvas.w,ch=P.canvas.h,off=cutA(),withA=!!(P.out.audio&&(SONG.blob||SONG.url)&&SONG.an);ST.playing=false;XP.run=true;$('#mGo').hidden=true;$('#mStop').hidden=false;
  const vs=[];let vdesc=null,verr=null,t0=performance.now();
